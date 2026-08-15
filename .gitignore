@@ -17,3 +17,10 @@ venv/
 runs/
 *.pt
 .pytest_cache/
+backend/training/dataset*/
+backend/training/test_dl/
+
+# Large redundant binaries & unused models
+frontend/public/onnx-wasm/
+frontend/public/models/flower_yolo11s.onnx
+
