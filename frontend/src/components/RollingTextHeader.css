@@ -1,0 +1,71 @@
+/* ========================================================================= */
+/* FLORA — STRICT SEQUENTIAL ROLLING TEXT HEADER                             */
+/* ========================================================================= */
+
+.seq-rolling-header-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  user-select: none;
+}
+
+.seq-badge-text,
+.seq-heading-text {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+}
+
+.seq-word-group {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+
+.seq-char-space {
+  display: inline-block;
+  width: 0.28em;
+}
+
+/* Character Box Slot */
+.seq-char-slot {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  height: 1.18em;
+  vertical-align: baseline;
+  line-height: 1.18em;
+  perspective: 350px;
+}
+
+/* Character Track — smooth 3D roll transition */
+.seq-char-track {
+  display: flex;
+  flex-direction: column;
+  transform: translateY(0);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.seq-char-track.is-rolled {
+  transform: translateY(-50%);
+}
+
+/* Individual letter faces */
+.seq-char-face {
+  display: inline-block;
+  height: 1.18em;
+  line-height: 1.18em;
+  text-align: center;
+  backface-visibility: hidden;
+}
+
+.seq-char-face.front {
+  opacity: 0.9;
+}
+
+.seq-char-face.rolled {
+  opacity: 1;
+  font-weight: inherit;
+}

@@ -1,0 +1,19 @@
+# Node dependencies & build
+node_modules/
+dist/
+.vite/
+
+# Python & Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+.env
+.env.local
+
+# ML Datasets & Weights
+runs/
+*.pt
+.pytest_cache/

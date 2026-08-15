@@ -1,0 +1,99 @@
+{
+  "flowers": [
+    {
+      "id": "chrysanthemum",
+      "index": 0,
+      "name_vi": "Hoa cúc",
+      "name_en": "Chrysanthemum",
+      "scientific_name": "Chrysanthemum morifolium",
+      "symbol": "🌼",
+      "color_palette": ["#FFE066", "#FFA94D", "#FFFFFF", "#FF6B6B"],
+      "meaning": "Symbolizes longevity, vitality, joy, and nobility. In ornamental decor, chrysanthemums represent flourishing prosperity and positivity.",
+      "season": "Autumn through early winter, peak flourishing from September to December.",
+      "distribution": "Native to East Asia, cultivated extensively in Japan, China, Vietnam, and worldwide.",
+      "care": "Prefers full to partial sunlight, well-drained moist soil, moderate watering every 1-2 days.",
+      "decorative_tips": "Identified by dense concentric rings of radiating petals emanating from a central disk, maintaining distinct geometric structure regardless of artificial dyeing.",
+      "fun_facts": [
+        "The official imperial seal and throne of the Emperor of Japan (Chrysanthemum Throne).",
+        "Over 20,000 cultivated varieties exist across the globe with distinct petal curvatures.",
+        "Traditional herbal chrysanthemum infusion has been enjoyed for centuries."
+      ]
+    },
+    {
+      "id": "rose",
+      "index": 1,
+      "name_vi": "Hoa hồng",
+      "name_en": "Rose",
+      "scientific_name": "Rosa spp.",
+      "symbol": "🌹",
+      "color_palette": ["#FF4D6D", "#C9184A", "#FF758F", "#FFCCD5", "#D8B4E2"],
+      "meaning": "Universal emblem of romance, profound love, grace, and timeless elegance.",
+      "season": "Blooms year-round in temperate environments, peak flourishing in spring and summer.",
+      "distribution": "Originally native to Asia and the Mediterranean, now globally hybridized.",
+      "care": "Requires at least 6 hours of daily sunlight, nutrient-rich well-drained soil, and regular pruning.",
+      "decorative_tips": "Recognized by spiral swirling petal layers folding inwards toward the core and characteristic calyx structure.",
+      "fun_facts": [
+        "Over 30,000 distinct cultivars from miniature shrubs to climbing ramblers.",
+        "Rose fossil records date back over 35 million years.",
+        "Natural rose essential oil remains one of the most prestigious fragrance bases in haute perfumery."
+      ]
+    },
+    {
+      "id": "hydrangea",
+      "index": 2,
+      "name_vi": "Cẩm tú cầu",
+      "name_en": "Hydrangea",
+      "scientific_name": "Hydrangea macrophylla",
+      "symbol": "🌸",
+      "color_palette": ["#74C0FC", "#A5D8FF", "#B197FC", "#F783AC", "#D0BFFF"],
+      "meaning": "Symbolizes heartfelt gratitude, deep emotion, abundance, and unity.",
+      "season": "Summer through autumn, from May to October, especially thriving in cool highland climates.",
+      "distribution": "Native to Japan, Korea, and the Americas.",
+      "care": "Thrives in partial shade, requires generous watering, and moist organic-rich soil.",
+      "decorative_tips": "Distinguished by dense spherical pom-pom clusters composed of dozens of small four-petaled florets.",
+      "fun_facts": [
+        "Natural bloom pigmentation shifts based on soil pH (acidic soil yields blues, alkaline produces pinks).",
+        "The name derives from ancient Greek 'hydro' (water) and 'angeion' (vessel).",
+        "A celebrated ornamental flower in cool mountainous regions and temperate highland gardens worldwide."
+      ]
+    },
+    {
+      "id": "lavender",
+      "index": 3,
+      "name_vi": "Oải hương",
+      "name_en": "Lavender",
+      "scientific_name": "Lavandula angustifolia",
+      "symbol": "💜",
+      "color_palette": ["#9775FA", "#7950F2", "#B197FC", "#E5DBFF"],
+      "meaning": "Represents serenity, purity, devotion, tranquility, and graceful poise.",
+      "season": "Summer months, especially June through August.",
+      "distribution": "Mediterranean basin, celebrated in Provence, France and worldwide herb gardens.",
+      "care": "Demands full sunshine, low humidity, lean sandy soil, and sharp drainage.",
+      "decorative_tips": "Characterized by slender vertical spike stalks with tiered whorls of miniature calyces along the stem.",
+      "fun_facts": [
+        "Ancient Romans infused bathwater with lavender, giving rise to its Latin root 'lavare' (to wash).",
+        "Contains aromatic linalool, widely studied for calming relaxation and sleep support.",
+        "Iconic purple fields of Provence attract millions of visitors every summer."
+      ]
+    },
+    {
+      "id": "sunflower",
+      "index": 4,
+      "name_vi": "Hướng dương",
+      "name_en": "Sunflower",
+      "scientific_name": "Helianthus annuus",
+      "symbol": "🌻",
+      "color_palette": ["#FFD43B", "#FAB005", "#F59F00", "#795548", "#4E342E"],
+      "meaning": "Symbolizes unwavering optimism, warmth, loyalty, vitality, and seeking the light.",
+      "season": "Summer through autumn, June through November.",
+      "distribution": "Native to North America, cultivated across the globe.",
+      "care": "Needs full direct sun (6-8 hours), drought-tolerant once established, deep fertile soil.",
+      "decorative_tips": "Features a prominent broad circular disk florets center bordered by radiant elongated ray petals.",
+      "fun_facts": [
+        "Exhibits heliotropism: young flower buds track the sun's journey across the sky from east to west.",
+        "Vincent van Gogh's iconic 'Sunflowers' series revolutionized floral still-life painting.",
+        "A single sunflower head is actually an inflorescence made of thousands of tiny individual flowers."
+      ]
+    }
+  ]
+}
