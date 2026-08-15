@@ -11,7 +11,7 @@ const translations = {
     btnLaunchStudio: "Launch Vision Studio",
 
     // Studio Header
-    studioBadge: "FLOWER VISION STUDIO",
+    studioBadge: "FLOWER VISION AI",
     studioHeading: "Flora Flower Vision",
 
     // Studio Mode Switcher
@@ -57,7 +57,7 @@ const translations = {
     btnClose: "Close",
 
     // Architecture Diagram Section
-    archBadge: "FLORA NEURAL ARCHITECTURE",
+    archBadge: "SYSTEM PIPELINE & DATAFLOW",
     archHeading: "Flora System Architecture",
     archSubheading: "Click any component to inspect its data flow, relationships, and source code",
     inspectorTitle: "Component Inspector",
@@ -74,6 +74,19 @@ const translations = {
     navStudio: "Vision Studio",
     navArch: "Architecture",
     backToLanding: "Back to Landing Page",
+
+    // Shortcuts Modal
+    shortcutsTitle: "Keyboard Shortcuts",
+    shortcutsSub: "Quickly navigate across sections and control AI vision features",
+    hkHero: "Go to Landing Page",
+    hkStudio: "Go to Vision Studio",
+    hkArch: "Go to Architecture",
+    hkPrevNext: "Navigate Up / Down",
+    hkCam: "Switch to Camera",
+    hkUpload: "Switch to Photo Upload",
+    hkToggleCam: "Toggle Camera Start/Stop",
+    hkHelp: "Toggle Shortcuts Help",
+    hkClose: "Close active modal",
   },
   vi: {
     // Top Bar
@@ -85,7 +98,7 @@ const translations = {
     btnLaunchStudio: "Mở Studio Nhận Diện",
 
     // Studio Header
-    studioBadge: "STUDIO NHẬN DIỆN LOÀI HOA",
+    studioBadge: "NHẬN DIỆN HOA",
     studioHeading: "Nhận Diện Hoa Flora",
 
     // Studio Mode Switcher
@@ -131,8 +144,8 @@ const translations = {
     btnClose: "Đóng",
 
     // Architecture Diagram Section
-    archBadge: "KIẾN TRÚC FLORA",
-    archHeading: "Kiến Trúc Flora",
+    archBadge: "LUỒNG DỮ LIỆU & THÔNG SỐ HỆ THỐNG",
+    archHeading: "Kiến Trúc Hệ Thống Flora",
     archSubheading: "Bấm vào từng khối thành phần để kiểm tra luồng dữ liệu, quan hệ kết nối và mã nguồn thực tế",
     inspectorTitle: "Chi Tiết Thành Phần",
     clickToInspect: "Nhấp vào một khối thành phần phía trên để xem luồng dữ liệu thực tế",
@@ -148,6 +161,19 @@ const translations = {
     navStudio: "Studio Nhận Diện",
     navArch: "Kiến Trúc",
     backToLanding: "Quay về Trang chủ",
+
+    // Shortcuts Modal
+    shortcutsTitle: "Phím Tắt Bàn Phím",
+    shortcutsSub: "Điều hướng nhanh giữa các trang và điều khiển các tính năng AI",
+    hkHero: "Về Trang Chủ",
+    hkStudio: "Đến Studio Nhận Diện",
+    hkArch: "Đến trang Kiến Trúc",
+    hkPrevNext: "Chuyển trang Lên / Xuống",
+    hkCam: "Chuyển chế độ Camera",
+    hkUpload: "Chuyển chế độ Tải Ảnh",
+    hkToggleCam: "Bật / Tắt Camera",
+    hkHelp: "Mở / Đóng bảng phím tắt",
+    hkClose: "Đóng cửa sổ hiện tại",
   }
 };
 

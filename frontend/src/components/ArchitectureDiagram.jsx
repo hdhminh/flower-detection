@@ -9,7 +9,7 @@ import './ArchitectureDiagram.css';
 
 // ─── Canvas dimensions — optimized for full-width presentation ──────────
 const VW = 1440;
-const VH = 540;
+const VH = 575;
 const CY = 270;
 const R  = 44;     // regular node radius
 const RH = 54;     // hero radius (ONNX)
@@ -145,7 +145,7 @@ export function ArchitectureDiagram({ isActive = false }) {
             if (i > revealed) return null;
             const cardX = l.x - l.w / 2;
             const cardY = 16;
-            const cardH = VH - 32;
+            const cardH = 485;
             const isNew = i === animLayer;
 
             return (
@@ -287,7 +287,7 @@ export function ArchitectureDiagram({ isActive = false }) {
           {revealed < MAX && (
             <text
               x={VW / 2}
-              y={VH - 8}
+              y={VH - 16}
               textAnchor="middle"
               fontSize="11.5"
               fontFamily="JetBrains Mono, monospace"

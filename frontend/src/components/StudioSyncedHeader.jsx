@@ -37,7 +37,7 @@ export function StudioSyncedHeader({
   isActive = false,
   badge = null,
   heading = null,
-  charDuration = 500,     // 0.5s per character step
+  charDuration = 160,     // 0.16s per character step (fast & snappy)
   holdDuration = 10000,   // 10s hold for fully resolved text
   scrambleHold = 1500,    // 1.5s hold in fully scrambled state
 }) {

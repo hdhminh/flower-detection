@@ -20,6 +20,8 @@ import {
   XCircle,
   Loader2,
   ArrowUp,
+  ArrowDown,
+  Keyboard,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { defaultDetector } from './inference/yoloInference';
@@ -53,6 +55,9 @@ export function App() {
   const [detections, setDetections] = useState([]);
   const [isDetecting, setIsDetecting] = useState(false);
   const [selectedFlowerForModal, setSelectedFlowerForModal] = useState(null);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const [shortcutToast, setShortcutToast] = useState(null);
+  const shortcutToastTimerRef = useRef(null);
   const [isModelReady, setIsModelReady] = useState(false);
 
   // Toast system for displaying results
@@ -331,12 +336,32 @@ export function App() {
     });
   }, []);
 
-  const modalOpenRef = useRef(false);
-  useEffect(() => {
-    modalOpenRef.current = !!selectedFlowerForModal;
-  }, [selectedFlowerForModal]);
+  const triggerShortcutToast = useCallback((msg, keyBadge) => {
+    if (shortcutToastTimerRef.current) clearTimeout(shortcutToastTimerRef.current);
+    setShortcutToast({ text: msg, keyBadge });
+    shortcutToastTimerRef.current = setTimeout(() => {
+      setShortcutToast(null);
+    }, 1800);
+  }, []);
 
-  // GSAP Observer: wheel + touch swipe
+  const modalOpenRef = useRef(false);
+  const dossierOpenRef = useRef(false);
+  const shortcutsOpenRef = useRef(false);
+  const isStreamingRef = useRef(false);
+  const studioModeRef = useRef('camera');
+
+  useEffect(() => {
+    dossierOpenRef.current = !!selectedFlowerForModal;
+    shortcutsOpenRef.current = showShortcutsModal;
+    modalOpenRef.current = !!selectedFlowerForModal || showShortcutsModal;
+  }, [selectedFlowerForModal, showShortcutsModal]);
+
+  useEffect(() => {
+    isStreamingRef.current = isStreaming;
+    studioModeRef.current = studioMode;
+  }, [isStreaming, studioMode]);
+
+  // GSAP Observer: wheel + touch swipe + keyboard shortcuts
   useEffect(() => {
     const obs = Observer.create({
       target: window,
@@ -371,12 +396,90 @@ export function App() {
     });
 
     const onKey = (e) => {
-      if (modalOpenRef.current) return;
-      if (e.key === 'ArrowDown' || e.key === 'PageDown') {
-        if (currentSlideRef.current < 2) goToSlide(currentSlideRef.current + 1);
+      // Ignore if user is typing inside an input/textarea
+      const tag = e.target?.tagName?.toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target?.isContentEditable) {
+        return;
       }
-      if (e.key === 'ArrowUp' || e.key === 'PageUp') {
-        if (currentSlideRef.current > 0) goToSlide(currentSlideRef.current - 1);
+
+      // Escape key handles closing modals first
+      if (e.key === 'Escape') {
+        if (dossierOpenRef.current) {
+          setSelectedFlowerForModal(null);
+          return;
+        }
+        if (shortcutsOpenRef.current) {
+          setShowShortcutsModal(false);
+          return;
+        }
+      }
+
+      // Help Modal Toggle ('?' or Shift+'/')
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        setShowShortcutsModal(prev => !prev);
+        return;
+      }
+
+      // If a modal is open, don't trigger background navigation
+      if (modalOpenRef.current) return;
+
+      const keyLower = e.key.toLowerCase();
+
+      // Section Navigation Shortcuts
+      if (e.key === '1' || keyLower === 'h') {
+        e.preventDefault();
+        goToSlide(0);
+        triggerShortcutToast(t('navLanding'), '1');
+      } else if (e.key === '2' || keyLower === 's') {
+        e.preventDefault();
+        goToSlide(1);
+        triggerShortcutToast(t('navStudio'), '2');
+      } else if (e.key === '3' || keyLower === 'a') {
+        e.preventDefault();
+        goToSlide(2);
+        triggerShortcutToast(t('navArch'), '3');
+      } else if (e.key === 'ArrowDown' || e.key === 'PageDown' || keyLower === 'j') {
+        if (currentSlideRef.current < 2) {
+          e.preventDefault();
+          goToSlide(currentSlideRef.current + 1);
+        }
+      } else if (e.key === 'ArrowUp' || e.key === 'PageUp' || keyLower === 'k') {
+        if (currentSlideRef.current > 0) {
+          e.preventDefault();
+          goToSlide(currentSlideRef.current - 1);
+        }
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        goToSlide(0);
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        goToSlide(2);
+      }
+
+      // Studio Mode Shortcuts (Camera vs Upload vs Toggle Camera)
+      else if (keyLower === 'c') {
+        e.preventDefault();
+        if (currentSlideRef.current !== 1) goToSlide(1);
+        setStudioMode('camera');
+        triggerShortcutToast(t('tabLiveCamera'), 'C');
+      } else if (keyLower === 'u' || keyLower === 'p') {
+        e.preventDefault();
+        if (currentSlideRef.current !== 1) goToSlide(1);
+        setStudioMode('photo');
+        stopCamera();
+        triggerShortcutToast(t('tabPhoto'), 'U');
+      } else if (e.key === ' ' || e.code === 'Space') {
+        if (currentSlideRef.current === 1 && studioModeRef.current === 'camera') {
+          e.preventDefault();
+          if (isStreamingRef.current) {
+            stopCamera();
+            triggerShortcutToast(t('btnStopCamera'), 'Space');
+          } else {
+            startCamera();
+            triggerShortcutToast(t('btnStartCamera'), 'Space');
+          }
+        }
       }
     };
 
@@ -385,7 +488,7 @@ export function App() {
       obs.kill();
       window.removeEventListener('keydown', onKey);
     };
-  }, [goToSlide]);
+  }, [goToSlide, stopCamera, triggerShortcutToast, t]);
 
   const scrollToStudio = () => goToSlide(1);
   const scrollToHero = () => goToSlide(0);
@@ -682,37 +785,58 @@ export function App() {
         </div>{/* end .slide-track */}
       </div>{/* end .slide-viewport */}
 
-      {/* Navigation Dots on Right Edge (3 Sections: blue theme on Studio & Arch) */}
+      {/* Navigation Dots on Right Edge (Exactly 3 Dots for 3 Sections) */}
       <nav className={`slide-nav-dots ${activeSlide >= 1 ? 'theme-blue' : 'theme-yellow'}`} aria-label="Section navigation">
         <button
           className={`slide-dot ${activeSlide === 0 ? 'active' : ''}`}
           onClick={() => goToSlide(0)}
           aria-label={t('navLanding')}
-          title={t('navLanding')}
+          title={`${t('navLanding')} [1]`}
         />
         <button
           className={`slide-dot ${activeSlide === 1 ? 'active' : ''}`}
           onClick={() => goToSlide(1)}
           aria-label={t('navStudio')}
-          title={t('navStudio')}
+          title={`${t('navStudio')} [2]`}
         />
         <button
           className={`slide-dot ${activeSlide === 2 ? 'active' : ''}`}
           onClick={() => goToSlide(2)}
           aria-label={t('navArch')}
-          title={t('navArch')}
+          title={`${t('navArch')} [3]`}
         />
       </nav>
 
-      {/* Floating Step-Up Button — Goes up one section (Section 3 -> Section 2 -> Section 1) */}
-      <button
-        className={`floating-back-to-top ${activeSlide > 0 ? 'visible-btn' : 'hidden-btn'}`}
-        onClick={() => goToSlide(Math.max(0, activeSlide - 1))}
-        aria-label={t('backToLanding')}
-        title={t('backToLanding')}
-      >
-        <ArrowUp size={20} strokeWidth={2.4} />
-      </button>
+      {/* Floating Shortcut Action Toast */}
+      {shortcutToast && (
+        <div className="shortcut-action-toast" role="status" aria-live="polite">
+          <kbd className="toast-kbd-badge">{shortcutToast.keyBadge}</kbd>
+          <span className="toast-txt">{shortcutToast.text}</span>
+        </div>
+      )}
+
+      {/* Floating Action Buttons Stack (Bottom Right) */}
+      <div className="floating-nav-actions">
+        {/* Floating Step-Up Button */}
+        <button
+          className={`floating-back-to-top ${activeSlide > 0 ? 'visible-btn' : 'hidden-btn'}`}
+          onClick={() => goToSlide(Math.max(0, activeSlide - 1))}
+          aria-label={t('backToLanding')}
+          title={t('backToLanding')}
+        >
+          <ArrowUp size={20} strokeWidth={2.4} />
+        </button>
+
+        {/* Floating Step-Down Button — ONLY visible on Section 2 (activeSlide === 1) */}
+        <button
+          className={`floating-step-down ${activeSlide === 1 ? 'visible-btn' : 'hidden-btn'}`}
+          onClick={() => goToSlide(2)}
+          aria-label={t('navArch')}
+          title={`${t('navArch')} [3]`}
+        >
+          <ArrowDown size={20} strokeWidth={2.4} />
+        </button>
+      </div>
 
       {/* Taxonomic Dossier Modal */}
       {selectedFlowerForModal && (
@@ -721,6 +845,78 @@ export function App() {
           onClose={() => setSelectedFlowerForModal(null)}
         />
       )}
+
+      {/* Keyboard Shortcuts Modal */}
+      {showShortcutsModal && (
+        <KeyboardShortcutsModal onClose={() => setShowShortcutsModal(false)} />
+      )}
+    </div>
+  );
+}
+
+// Modal displaying clean, interactive keyboard shortcuts
+function KeyboardShortcutsModal({ onClose }) {
+  const { t } = useLang();
+
+  const shortcutGroups = [
+    {
+      title: t('shortcutsTitle'),
+      items: [
+        { keys: ['1', 'H'], label: t('hkHero') },
+        { keys: ['2', 'S'], label: t('hkStudio') },
+        { keys: ['3', 'A'], label: t('hkArch') },
+        { keys: ['↓', '↑', 'J', 'K'], label: t('hkPrevNext') },
+        { keys: ['C'], label: t('hkCam') },
+        { keys: ['U', 'P'], label: t('hkUpload') },
+        { keys: ['Space'], label: t('hkToggleCam') },
+        { keys: ['?'], label: t('hkHelp') },
+        { keys: ['Esc'], label: t('hkClose') },
+      ]
+    }
+  ];
+
+  return (
+    <div
+      className="modal-backdrop-blur"
+      onClick={onClose}
+      onWheel={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+    >
+      <div className="modal-shortcuts-card" onClick={(e) => e.stopPropagation()}>
+        <div className="shortcuts-header">
+          <div className="shortcuts-title-wrap">
+            <div className="shortcuts-icon-ring">
+              <Keyboard size={20} />
+            </div>
+            <div>
+              <h2>{t('shortcutsTitle')}</h2>
+              <p className="shortcuts-sub">{t('shortcutsSub')}</p>
+            </div>
+          </div>
+          <button className="dossier-close-button" onClick={onClose}>
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="shortcuts-grid">
+          {shortcutGroups[0].items.map((item, idx) => (
+            <div key={idx} className="shortcut-item-row">
+              <span className="shortcut-label">{item.label}</span>
+              <div className="shortcut-keys-group">
+                {item.keys.map((k, i) => (
+                  <kbd key={i} className="hk-kbd-tag">{k}</kbd>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="shortcuts-footer">
+          <button className="btn-close-dossier" onClick={onClose}>
+            {t('btnClose')}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

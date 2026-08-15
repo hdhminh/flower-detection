@@ -6,8 +6,8 @@ export function RollingTextHeader({
   isActive = false,
   badge = 'FLORA NEURAL ARCHITECTURE',
   heading = 'Flora System Architecture',
-  rollDuration = 360, // ms per letter roll
-  letterGap = 70,     // ms pause between consecutive letters
+  rollDuration = 140, // ms per letter roll (ultra fast & snappy)
+  letterGap = 20,     // ms pause between consecutive letters
   holdDuration = 7000, // ms hold after all letters finish rolling
 }) {
   // Array of boolean flags indicating if each character has rolled
