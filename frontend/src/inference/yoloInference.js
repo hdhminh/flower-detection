@@ -49,8 +49,8 @@ export class FlowerDetector {
       try {
         const ort = await waitForOrt();
         
-        // Configure WASM paths (served locally)
-        ort.env.wasm.wasmPaths = '/onnx-wasm/';
+        // Configure WASM paths from global high-speed CDN (supports Vercel, Netlify, localhost)
+        ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/';
         ort.env.wasm.numThreads = 1;
         ort.env.wasm.simd = true;
 
