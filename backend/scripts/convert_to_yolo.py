@@ -19,9 +19,9 @@ CLASS_MAPPING = {
     "hydrangea": 2,
     "cam_tu_cau": 2,
     "tu_cau": 2,
-    "lavender": 3,
-    "oai_huong": 3,
-    "hoa_oai_huong": 3,
+    "carnation": 3,
+    "cam_chuong": 3,
+    "hoa_cam_chuong": 3,
     "sunflower": 4,
     "huong_duong": 4,
     "hoa_huong_duong": 4

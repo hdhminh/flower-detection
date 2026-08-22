@@ -28,7 +28,7 @@ def test_get_flower_list():
     assert "chrysanthemum" in ids
     assert "rose" in ids
     assert "hydrangea" in ids
-    assert "lavender" in ids
+    assert "carnation" in ids
     assert "sunflower" in ids
 
 def test_get_flower_detail():
@@ -58,10 +58,10 @@ def test_explain_flower_endpoint():
     assert "care" in data_vi
 
     # Test English explanation
-    response_en = client.post("/flower/explain", json={"flower_name": "lavender", "lang": "en"})
+    response_en = client.post("/flower/explain", json={"flower_name": "carnation", "lang": "en"})
     assert response_en.status_code == 200
     data_en = response_en.json()
-    assert "Lavender" in data_en.get("name_en", "")
+    assert "Carnation" in data_en.get("name_en", "")
     assert "meaning" in data_en
 
 if __name__ == "__main__":

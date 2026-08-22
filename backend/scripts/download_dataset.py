@@ -15,7 +15,7 @@ CLASSES = [
     {"id": 0, "name": "chrysanthemum", "color": (255, 220, 50)},
     {"id": 1, "name": "rose", "color": (230, 40, 70)},
     {"id": 2, "name": "hydrangea", "color": (120, 180, 245)},
-    {"id": 3, "name": "lavender", "color": (160, 110, 230)},
+    {"id": 3, "name": "carnation", "color": (255, 105, 160)},
     {"id": 4, "name": "sunflower", "color": (250, 190, 20)}
 ]
 

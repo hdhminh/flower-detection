@@ -69,9 +69,12 @@ export function App() {
   const [cameraFps, setCameraFps] = useState(0);
   const [cameraLatency, setCameraLatency] = useState(0);
   const [cameraDetections, setCameraDetections] = useState([]);
-  const [camDimensions, setCamDimensions] = useState({ width: 1280, height: 720 });
+  const [containerDims, setContainerDims] = useState({ width: 640, height: 480 });
+  const [nativeVideoDims, setNativeVideoDims] = useState({ width: 1280, height: 720 });
 
   const videoRef = useRef(null);
+  const viewfinderRef = useRef(null);
+  const resizeObserverRef = useRef(null);
   const fileInputRef = useRef(null);
   const previewImgRef = useRef(null);
   const animFrameId = useRef(null);
@@ -192,7 +195,7 @@ export function App() {
     if (!imageElement || !imageElement.complete) return;
     setIsDetecting(true);
     try {
-      const res = await defaultDetector.detect(imageElement, 0.15);
+      const res = await defaultDetector.detect(imageElement, 0.35);
       const dets = res.detections || [];
       setDetections(dets);
 
@@ -251,10 +254,16 @@ export function App() {
         videoRef.current.srcObject = stream;
         videoRef.current.onloadedmetadata = () => {
           videoRef.current.play();
-          setCamDimensions({
+          setNativeVideoDims({
             width: videoRef.current.videoWidth || 1280,
             height: videoRef.current.videoHeight || 720,
           });
+          if (viewfinderRef.current) {
+            setContainerDims({
+              width: viewfinderRef.current.clientWidth,
+              height: viewfinderRef.current.clientHeight,
+            });
+          }
           setIsStreaming(true);
         };
       }
@@ -278,7 +287,24 @@ export function App() {
     setToasts([]);
   }, [lang]);
 
-  // Camera real-time loop — results go to HUD panel only, no toasts
+  // Track container dimensions with ResizeObserver
+  useEffect(() => {
+    const el = viewfinderRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        if (width > 0 && height > 0) {
+          setContainerDims({ width: Math.round(width), height: Math.round(height) });
+        }
+      }
+    });
+    ro.observe(el);
+    resizeObserverRef.current = ro;
+    return () => ro.disconnect();
+  }, []);
+
+  // Camera real-time loop — sensitive 0.25 threshold with 1000ms Sticky TTL smoothing
   useEffect(() => {
     if (!isStreaming || studioMode !== 'camera') {
       if (animFrameId.current) cancelAnimationFrame(animFrameId.current);
@@ -287,14 +313,17 @@ export function App() {
     const loop = async () => {
       const now = performance.now();
       const video = videoRef.current;
-      if (video && video.readyState >= 2 && !isInferencingRef.current && now - lastInferenceTimeRef.current >= 300) {
+      if (video && video.readyState >= 2 && !isInferencingRef.current && now - lastInferenceTimeRef.current >= 60) {
         isInferencingRef.current = true;
         lastInferenceTimeRef.current = now;
         try {
-          if (video.videoWidth) setCamDimensions({ width: video.clientWidth, height: video.clientHeight });
-          const res = await defaultDetector.detect(video, 0.15);
-          const dets = res.detections || [];
-          setCameraDetections(dets);
+          if (video.videoWidth && video.videoHeight) {
+            setNativeVideoDims({ width: video.videoWidth, height: video.videoHeight });
+          }
+          const res = await defaultDetector.detect(video, 0.35);
+          const rawDets = res.detections || [];
+          setCameraDetections(rawDets);
+
           setCameraFps(res.fps || 0);
           setCameraLatency(res.durationMs || 0);
         } catch (err) {
@@ -585,7 +614,7 @@ export function App() {
                   className={`mode-tab-btn ${studioMode === 'camera' ? 'active-tab' : ''}`}
                   onClick={() => { setStudioMode('camera'); }}
                 >
-                  <Camera size={15} />
+                  <Camera size={13.5} />
                   <span>{t('tabLiveCamera')}</span>
                 </button>
                 <button
@@ -594,7 +623,7 @@ export function App() {
                   className={`mode-tab-btn ${studioMode === 'photo' ? 'active-tab' : ''}`}
                   onClick={() => { setStudioMode('photo'); stopCamera(); }}
                 >
-                  <ImageIcon size={15} />
+                  <ImageIcon size={13.5} />
                   <span>{t('tabPhoto')}</span>
                 </button>
               </div>
@@ -606,7 +635,7 @@ export function App() {
 
             {/* === VIEWPORT === */}
             <div className="studio-viewport-col">
-              <div className="studio-viewfinder-frame">
+              <div className="studio-viewfinder-frame" ref={viewfinderRef}>
 
                 {/* Submerged Logo Watermark centered inside the Viewfinder */}
                 {((studioMode === 'camera' && !isStreaming) || (studioMode === 'photo' && !selectedPhoto)) && (
@@ -626,14 +655,20 @@ export function App() {
 
                   {/* Camera overlay */}
                   {isStreaming && (
-                    <DetectionOverlay detections={cameraDetections} width={camDimensions.width} height={camDimensions.height} />
+                    <DetectionOverlay
+                      detections={cameraDetections}
+                      width={containerDims.width}
+                      height={containerDims.height}
+                      srcWidth={nativeVideoDims.width}
+                      srcHeight={nativeVideoDims.height}
+                    />
                   )}
 
                   {/* Camera inactive */}
                   {!isStreaming && (
                     <div className="camera-standby-state" onClick={startCamera} role="button" tabIndex={0} title={t('btnStartCamera')}>
                       <div className="camera-icon-ring">
-                        <Camera size={36} strokeWidth={1.75} />
+                        <Camera size={30} strokeWidth={1.75} />
                       </div>
                       <h3>{t('turnOnCamera')}</h3>
                       <p className="camera-standby-desc">{t('cameraInstruction')}</p>
@@ -662,7 +697,7 @@ export function App() {
                     <div className="photo-empty-dropzone" onClick={() => fileInputRef.current?.click()} role="button" tabIndex={0}>
                       <div className="upload-dropzone-inner">
                         <div className="upload-icon-ring">
-                          <UploadCloud size={36} strokeWidth={1.75} />
+                          <UploadCloud size={30} strokeWidth={1.75} />
                         </div>
                         <h3>{t('dropzoneTitle')}</h3>
                         <p className="upload-standby-desc">{t('dropzoneSubtitle')}</p>
@@ -675,7 +710,7 @@ export function App() {
                     <>
                       {isDetecting && (
                         <div className="photo-scanning-overlay">
-                          <Loader2 size={28} className="spin-loader" />
+                          <Loader2 size={24} className="spin-loader" />
                           <span>{t('runningInference')}</span>
                         </div>
                       )}
@@ -688,7 +723,7 @@ export function App() {
                       />
                       <div className="viewfinder-streaming-bar">
                         <button className="btn-photo-change" onClick={() => fileInputRef.current?.click()}>
-                          <UploadCloud size={14} />
+                          <UploadCloud size={13} />
                           <span>{t('btnIdentifyAgain')}</span>
                         </button>
                         <button className="btn-photo-clear" onClick={handleClearPhoto}>
@@ -705,7 +740,7 @@ export function App() {
             <div className="studio-hud-col">
               <div className="hud-header-bar">
                 <div className="hud-title-group">
-                  <Zap size={15} />
+                  <Zap size={14} />
                   <span>{t('hudTitle')}</span>
                 </div>
                 {modelStatus === 'ready' && (
@@ -742,24 +777,29 @@ export function App() {
                     {(studioMode === 'photo' ? detections : cameraDetections).map((det, idx) => (
                       <div key={idx} className="target-result-card" style={{ borderLeftColor: det.color }}>
                         <div className="target-meta-info">
-                          <h4>{lang === 'vi' ? (det.classNameVi || det.classNameEn) : det.classNameEn}</h4>
+                          <h4>
+                            {lang === 'vi' ? (det.classNameVi || det.classNameEn) : det.classNameEn}
+                            {det.isUncertain && <span title={t('uncertain') || 'Uncertain'} style={{ marginLeft: 6 }}>⚠️</span>}
+                          </h4>
                           <div className="confidence-track">
                             <div className="confidence-fill" style={{ width: `${Math.round(det.confidence * 100)}%`, background: det.color }} />
                           </div>
                         </div>
                         <div className="target-action-col">
                           <span className="pct-num">{Math.round(det.confidence * 100)}%</span>
-                          <button className="btn-open-dossier" onClick={() => setSelectedFlowerForModal(det.flowerId || det.classNameEn)}>
-                            <Eye size={13} />
-                            <span>{t('btnInfo')}</span>
-                          </button>
+                          {det.classId !== 5 && (
+                            <button className="btn-open-dossier" onClick={() => setSelectedFlowerForModal(det.flowerId || det.classNameEn)}>
+                              <Eye size={12} />
+                              <span>{t('btnInfo')}</span>
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
                   <div className="hud-empty-state">
-                    <CheckCircle2 size={34} />
+                    <CheckCircle2 size={28} />
                     <p>{t('awaitingDetection')}</p>
                     <span>
                       {studioMode === 'camera' && !isStreaming && t('emptyCamOff')}

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useLang } from '../lang';
 
-export function DetectionOverlay({ detections = [], width, height }) {
+export function DetectionOverlay({ detections = [], width, height, srcWidth, srcHeight }) {
   const canvasRef = useRef(null);
   const { lang } = useLang();
 
@@ -14,31 +14,32 @@ export function DetectionOverlay({ detections = [], width, height }) {
     canvas.height = height * dpr;
 
     const ctx = canvas.getContext('2d');
+    ctx.resetTransform();
     ctx.scale(dpr, dpr);
     ctx.clearRect(0, 0, width, height);
 
     if (!detections || detections.length === 0) return;
 
     detections.forEach((det) => {
-      const { x1, y1, x2, y2, color, confidence, classNameEn, classNameVi, srcWidth, srcHeight } = det;
-      
-      let drawX1 = x1;
-      let drawY1 = y1;
-      let drawX2 = x2;
-      let drawY2 = y2;
+      const { x1, y1, x2, y2, color, confidence, classNameEn, classNameVi } = det;
 
-      if (srcWidth && srcHeight) {
-        const renderScale = Math.min(width / srcWidth, height / srcHeight);
-        const renderW = srcWidth * renderScale;
-        const renderH = srcHeight * renderScale;
-        const offsetX = (width - renderW) / 2;
-        const offsetY = (height - renderH) / 2;
+      // Native video dims (e.g. 1280×720) → canvas display dims (e.g. 600×338)
+      // Video uses object-fit: cover, so we need cover-aware coord mapping.
+      const sw = srcWidth || det.srcWidth || width;
+      const sh = srcHeight || det.srcHeight || height;
 
-        drawX1 = offsetX + x1 * renderScale;
-        drawY1 = offsetY + y1 * renderScale;
-        drawX2 = offsetX + x2 * renderScale;
-        drawY2 = offsetY + y2 * renderScale;
-      }
+      // Cover scale: the larger scale fills the container without black bars
+      const coverScale = Math.max(width / sw, height / sh);
+      // The rendered video is centered in the container, some edges are cropped
+      const cropX = (sw * coverScale - width) / 2;   // pixels cropped from each side
+      const cropY = (sh * coverScale - height) / 2;  // pixels cropped from top/bottom
+
+      // Map from native coords to canvas coords:
+      // canvas_x = native_x * coverScale - cropX
+      const drawX1 = x1 * coverScale - cropX;
+      const drawY1 = y1 * coverScale - cropY;
+      const drawX2 = x2 * coverScale - cropX;
+      const drawY2 = y2 * coverScale - cropY;
 
       const boxW = drawX2 - drawX1;
       const boxH = drawY2 - drawY1;
@@ -88,7 +89,7 @@ export function DetectionOverlay({ detections = [], width, height }) {
       ctx.stroke();
 
       // Minimalist Label Tag
-      const labelText = `${name.toUpperCase()} · ${conf}%`;
+      const labelText = `${name.toUpperCase()} ${conf}%`;
       ctx.font = '700 12px "JetBrains Mono", Menlo, Consolas, monospace';
       const textMetrics = ctx.measureText(labelText);
       const tagW = textMetrics.width + 16;
@@ -118,6 +119,7 @@ export function DetectionOverlay({ detections = [], width, height }) {
         width: '100%',
         height: '100%',
         pointerEvents: 'none',
+        zIndex: 10,
       }}
     />
   );

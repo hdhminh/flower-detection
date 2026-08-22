@@ -105,35 +105,35 @@ export const LOCAL_FLOWERS_DB = [
     ]
   },
   {
-    id: "lavender",
+    id: "carnation",
     index: 3,
-    name_vi: "Oải Hương",
-    name_en: "Lavender",
-    scientific_name: "Lavandula angustifolia",
-    symbol: "💜",
-    image: "/images/flowers/lavender.jpg",
-    color_palette: ["#9775FA", "#7950F2", "#B197FC", "#E5DBFF"],
+    name_vi: "Hoa Cẩm Chướng",
+    name_en: "Carnation",
+    scientific_name: "Dianthus caryophyllus",
+    symbol: "🌺",
+    image: "/images/flowers/carnation.jpg",
+    color_palette: ["#FF6B9D", "#E64980", "#F783AC", "#FFDEEB"],
     // English
-    meaning: "Represents serenity, purity, devotion, tranquility, and graceful poise.",
-    season: "Summer months, especially June through August.",
-    distribution: "Mediterranean basin, celebrated in Provence, France and worldwide herb gardens.",
-    care: "Demands full sunshine, low humidity, lean sandy soil, and sharp drainage.",
-    decorative_tips: "Characterized by slender vertical spike stalks with tiered whorls of miniature calyces along the stem.",
+    meaning: "Symbolizes love, fascination, distinction, gratitude, and maternal devotion.",
+    season: "Late spring through summer, peak blooms in May to July.",
+    distribution: "Native to Mediterranean region, widely cultivated across Colombia, Spain, and worldwide floriculture centers.",
+    care: "Thrives in full sun (4-6 hours), well-drained slightly alkaline soil, moderate watering without waterlogging.",
+    decorative_tips: "Recognized by dense, ruffled petals with distinct serrated, crinkled edges and a sweet, clove-like fragrance.",
     fun_facts: [
-      "Ancient Romans infused bathwater with lavender, giving rise to its Latin root 'lavare' (to wash).",
-      "Contains aromatic linalool, widely studied for calming relaxation and sleep support.",
-      "Iconic purple fields of Provence attract millions of visitors every summer."
+      "The official flower of Mother's Day, popularized by Anna Jarvis in 1907.",
+      "Its scientific name Dianthus comes from Greek 'dios' (god) and 'anthos' (flower), meaning 'Flower of the Gods'.",
+      "One of the longest-lasting cut flowers, often maintaining freshness for over two weeks in a vase."
     ],
     // Vietnamese
-    meaning_vi: "Tượng trưng cho sự bình yên, thanh khiết, lòng trung thành và nét duyên dáng, thư thái tâm hồn.",
-    season_vi: "Tháng 6 đến tháng 8 vào mùa hè ngập tràn ánh nắng.",
-    distribution_vi: "Vùng Địa Trung Hải, nổi tiếng nhất tại thung lũng Provence nước Pháp và các trang trại thảo mộc.",
-    care_vi: "Cần nhiều nắng gắt, không khí khô ráo, đất cát thoát nước cực nhanh, tưới ít nước.",
-    decorative_tips_vi: "Nổi bật với cành hoa dạng bông thẳng đứng thon dài với nhiều tầng hoa tím nhỏ li ti mọc vòng quanh cuống.",
+    meaning_vi: "Tượng trưng cho tình yêu thuần khiết, sự ngưỡng mộ, lòng biết ơn sâu sắc và tình mẫu tử thiêng liêng.",
+    season_vi: "Cuối mùa xuân sang mùa hè, nở rộ rực rỡ nhất từ tháng 5 đến tháng 7.",
+    distribution_vi: "Vùng Địa Trung Hải, ngày nay được trồng rộng rãi tại Colombia, Tây Ban Nha, Đà Lạt và các thủ phủ hoa toàn cầu.",
+    care_vi: "Ưa nhiều nắng nhẹ (4-6 giờ/ngày), đất tơi xốp hơi kiềm, thoát nước tốt, tránh để đọng nước ở rễ.",
+    decorative_tips_vi: "Nổi bật với những cánh hoa viền răng cưa xếp tầng bồng bềnh như chiếc váy xòe cùng hương thơm dịu ngọt thoang thoảng.",
     fun_facts_vi: [
-      "Người La Mã cổ đại dùng hoa oải hương pha nước tắm, tạo nên gốc từ Latin 'lavare' (nghĩa là gột rửa).",
-      "Chứa hoạt chất Linalool tự nhiên giúp an thần, thư giãn thần kinh và cải thiện giấc ngủ sâu.",
-      "Những cánh đồng oải hương tím ngắt ở Provence thu hút hàng triệu du khách mỗi mùa hè."
+      "Là loài hoa biểu tượng chính thức của Ngày của Mẹ (Mother's Day) trên toàn thế giới.",
+      "Tên khoa học Dianthus bắt nguồn từ tiếng Hy Lạp 'dios' (thần linh) và 'anthos' (hoa), mang ý nghĩa 'Hoa của các vị Thần'.",
+      "Là một trong những loài hoa cắm bình giữ được độ tươi lâu nhất (thường trên 2 tuần)."
     ]
   },
   {

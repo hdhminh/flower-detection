@@ -58,22 +58,22 @@
       ]
     },
     {
-      "id": "lavender",
+      "id": "carnation",
       "index": 3,
-      "name_vi": "Oải hương",
-      "name_en": "Lavender",
-      "scientific_name": "Lavandula angustifolia",
-      "symbol": "💜",
-      "color_palette": ["#9775FA", "#7950F2", "#B197FC", "#E5DBFF"],
-      "meaning": "Represents serenity, purity, devotion, tranquility, and graceful poise.",
-      "season": "Summer months, especially June through August.",
-      "distribution": "Mediterranean basin, celebrated in Provence, France and worldwide herb gardens.",
-      "care": "Demands full sunshine, low humidity, lean sandy soil, and sharp drainage.",
-      "decorative_tips": "Characterized by slender vertical spike stalks with tiered whorls of miniature calyces along the stem.",
+      "name_vi": "Hoa cẩm chướng",
+      "name_en": "Carnation",
+      "scientific_name": "Dianthus caryophyllus",
+      "symbol": "🌺",
+      "color_palette": ["#FF6B9D", "#E64980", "#F783AC", "#FFDEEB"],
+      "meaning": "Symbolizes love, fascination, distinction, gratitude, and maternal devotion.",
+      "season": "Late spring through summer, peak blooms in May to July.",
+      "distribution": "Native to Mediterranean region, widely cultivated across Colombia, Spain, and worldwide floriculture centers.",
+      "care": "Thrives in full sun (4-6 hours), well-drained slightly alkaline soil, moderate watering without waterlogging.",
+      "decorative_tips": "Recognized by dense, ruffled petals with distinct serrated, crinkled edges and a sweet, clove-like fragrance.",
       "fun_facts": [
-        "Ancient Romans infused bathwater with lavender, giving rise to its Latin root 'lavare' (to wash).",
-        "Contains aromatic linalool, widely studied for calming relaxation and sleep support.",
-        "Iconic purple fields of Provence attract millions of visitors every summer."
+        "The official flower of Mother's Day, popularized by Anna Jarvis in 1907.",
+        "Its scientific name Dianthus comes from Greek 'dios' (god) and 'anthos' (flower), meaning 'Flower of the Gods'.",
+        "One of the longest-lasting cut flowers, often maintaining freshness for over two weeks in a vase."
       ]
     },
     {

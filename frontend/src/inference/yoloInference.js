@@ -1,11 +1,12 @@
 /**
- * ONNX Runtime Web Inference Engine for YOLOv11 Flower Detection.
+ * ONNX Runtime Web Inference Engine for YOLOv11 / YOLO26 Flower Detection.
  * Executes client-side inside the browser using ONNX Runtime Web 1.18.0.
+ * Standard architecture: WebGPU native GPU hardware acceleration with fallback to WASM CPU SIMD.
  */
 import { preprocessImage } from './preprocessing';
 import { postprocessYOLO, FLOWER_CLASSES } from './postprocessing';
 
-// Asynchronously wait for global ort object from CDN to prevent race conditions on cold start
+// Asynchronously wait for global ort object from CDN/Local to prevent race conditions on cold start
 async function waitForOrt(maxWaitMs = 10000) {
   const start = performance.now();
   while (typeof window !== 'undefined' && !window.ort) {
@@ -25,13 +26,13 @@ async function fetchModelBuffer(path) {
 }
 
 export class FlowerDetector {
-  constructor(modelPath = '/models/flower_yolo11s.onnx') {
+  constructor(modelPath = '/models/flower_yolo26s_v14.onnx') {
     this.modelPath = modelPath;
     this.session = null;
     this.isLoaded = false;
     this.isLoading = false;
     this.loadPromise = null;
-    this.backendName = 'WASM (CPU SIMD)';
+    this.backendName = 'Auto (GPU/CPU)';
     this.lastInferenceTime = 0;
     this.errorMessage = null;
   }
@@ -48,42 +49,44 @@ export class FlowerDetector {
       try {
         const ort = await waitForOrt();
         
-        // Configure WASM paths matching 1.18.0 CDN
-        ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/';
+        // Configure WASM paths (served locally)
+        ort.env.wasm.wasmPaths = '/onnx-wasm/';
         ort.env.wasm.numThreads = 1;
         ort.env.wasm.simd = true;
 
-        if (onProgress) onProgress(30, 'Fetching YOLOv11 model weights...');
+        if (onProgress) onProgress(30, 'Fetching YOLOv14 model weights...');
         console.log('[FlowerDetector] Loading model buffer for:', this.modelPath);
 
         let buffer;
         try {
           buffer = await fetchModelBuffer(this.modelPath);
         } catch (fetchErr) {
-          console.warn('[FlowerDetector] Failed to fetch primary model, trying fallback nano:', fetchErr);
-          this.modelPath = '/models/flower_yolo11n.onnx';
-          buffer = await fetchModelBuffer(this.modelPath);
+          this.isLoading = false;
+          this.errorMessage = `Failed to load model: ${fetchErr.message}`;
+          throw fetchErr;
         }
 
-        if (onProgress) onProgress(60, 'Creating ONNX session...');
+        if (onProgress) onProgress(60, 'Creating ONNX session with WebGPU acceleration...');
         
+        const hasWebGPU = typeof navigator !== 'undefined' && !!navigator.gpu;
+        const providers = hasWebGPU ? ['webgpu', 'wasm'] : ['wasm'];
+
         try {
+          this.session = await ort.InferenceSession.create(buffer, {
+            executionProviders: providers,
+            graphOptimizationLevel: 'all'
+          });
+          this.backendName = hasWebGPU ? 'WebGPU (Hardware GPU)' : 'WASM (CPU SIMD)';
+        } catch (gpuErr) {
+          console.warn('[FlowerDetector] WebGPU initialization notice (switching to WASM SIMD):', gpuErr.message || gpuErr);
           this.session = await ort.InferenceSession.create(buffer, {
             executionProviders: ['wasm'],
             graphOptimizationLevel: 'all'
           });
-        } catch (sErr) {
-          console.warn('[FlowerDetector] Failed to create session with primary buffer, attempting nano buffer:', sErr);
-          this.modelPath = '/models/flower_yolo11n.onnx';
-          const nanoBuffer = await fetchModelBuffer(this.modelPath);
-          this.session = await ort.InferenceSession.create(nanoBuffer, {
-            executionProviders: ['wasm'],
-            graphOptimizationLevel: 'all'
-          });
+          this.backendName = 'WASM (CPU SIMD)';
         }
 
-        this.backendName = 'WASM (CPU SIMD)';
-        console.log('[FlowerDetector] Session created successfully. Warming up...');
+        console.log(`[FlowerDetector] Session created successfully. Backend: ${this.backendName}. Warming up...`);
         if (onProgress) onProgress(80, 'Model loaded. Performing warmup...');
 
         await this.warmup();
@@ -109,17 +112,18 @@ export class FlowerDetector {
     if (!this.session) return;
     try {
       const ort = window.ort || (await waitForOrt());
+      // Model has static shape [1,3,640,640] - must use 640
       const dummyData = new Float32Array(1 * 3 * 640 * 640);
       const dummyTensor = new ort.Tensor('float32', dummyData, [1, 3, 640, 640]);
       const inputName = this.session.inputNames[0] || 'images';
       await this.session.run({ [inputName]: dummyTensor });
-      console.log('[FlowerDetector] Warmup complete.');
+      console.log('[FlowerDetector] Warmup complete (640x640).');
     } catch (wErr) {
       console.warn('[FlowerDetector] Warmup warning:', wErr);
     }
   }
 
-  async detect(imageSource, confThreshold = 0.05, iouThreshold = 0.45) {
+  async detect(imageSource, confThreshold = 0.35, iouThreshold = 0.45) {
     if (!this.session) {
       await this.loadModel();
     }
@@ -130,6 +134,7 @@ export class FlowerDetector {
 
     const ort = window.ort || (await waitForOrt());
     const startTime = performance.now();
+    // Model has static input shape [1,3,640,640]
     const { tensor, scaleInfo } = preprocessImage(imageSource, 640);
 
     // Convert preprocessed float32 data to ORT Tensor
@@ -140,6 +145,7 @@ export class FlowerDetector {
     const outputName = this.session.outputNames[0] || Object.keys(outputMap)[0];
     const outputTensor = outputMap[outputName];
 
+    // Standard YOLO NMS Postprocessing
     const detections = postprocessYOLO(outputTensor, scaleInfo, confThreshold, iouThreshold);
     const duration = performance.now() - startTime;
     this.lastInferenceTime = duration;
@@ -157,4 +163,4 @@ export class FlowerDetector {
   }
 }
 
-export const defaultDetector = new FlowerDetector('/models/flower_yolo11s.onnx');
+export const defaultDetector = new FlowerDetector('/models/flower_yolo26s_v14.onnx');

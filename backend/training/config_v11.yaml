@@ -1,0 +1,11 @@
+path: f:/AI_Model/flower dectection/backend/training/dataset_v11
+train: images/train
+val: images/val
+
+names:
+  0: chrysanthemum
+  1: rose
+  2: hydrangea
+  3: carnation
+  4: sunflower
+  5: other_flower

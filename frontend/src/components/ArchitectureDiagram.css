@@ -61,6 +61,30 @@
   gap: 0px;
 }
 
+.arch-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Hint Pill */
+.arch-click-hint-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 7px;
+  background: rgba(2, 132, 199, 0.08);
+  border: 1.5px dashed rgba(2, 132, 199, 0.35);
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #0284C7;
+  user-select: none;
+}
+
 /* Reset pill — matches .studio-mode-switcher style */
 .arch-reset-pill {
   display: inline-flex;
@@ -97,7 +121,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
+  cursor: default;
 }
 
 .arch-svg {
@@ -106,9 +130,46 @@
   display: block;
 }
 
-/* ── Reveal animations (one-shot only, no continuous looping) ── */
+/* ── Node Interactive Styles ── */
+.arch-node-group {
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: center;
+}
 
-/* Node pop — simple translateY + opacity, composited */
+.arch-node-pulse-ring {
+  opacity: 0;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.arch-node-circle {
+  transition: transform 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
+}
+
+.arch-node-group:hover .arch-node-pulse-ring,
+.arch-node-group:focus-visible .arch-node-pulse-ring {
+  opacity: 0.85;
+  animation: pulseNodeRing 1.8s infinite linear;
+}
+
+.arch-node-group:hover .arch-node-circle,
+.arch-node-group:focus-visible .arch-node-circle {
+  stroke-width: 4px;
+  filter: drop-shadow(0 0 16px rgba(14, 165, 233, 0.5)) !important;
+}
+
+.arch-node-group:hover .arch-node-label,
+.arch-node-group:focus-visible .arch-node-label {
+  fill: #0284C7;
+}
+
+@keyframes pulseNodeRing {
+  0% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 24; }
+}
+
+/* ── Reveal animations ── */
 .arch-node-pop {
   animation: nodePop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
@@ -117,7 +178,6 @@
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Arrow progressive flow draw from source to target */
 .arch-arrow-flow {
   stroke-dasharray: 400;
   stroke-dashoffset: 400;
@@ -128,11 +188,259 @@
   to   { stroke-dashoffset: 0;   opacity: 0.9; }
 }
 
-/* Zone label & vertical card fade-in */
 .arch-fadein {
   animation: fadeUp 0.45s ease-out both;
 }
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================================================= */
+/* ARCHITECTURE NODE DOSSIER MODAL (5 STREAMLINED SECTIONS)                  */
+/* ========================================================================= */
+
+.arch-node-dossier-card {
+  max-width: 780px !important;
+  max-height: 88vh;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+}
+
+/* Card Header Label */
+.arch-card-header-lbl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+/* ── 1. KHUNG 1: Micro Node Pipeline Diagram ── */
+.arch-flow-diagram-card {
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1.5px solid;
+  display: flex;
+  flex-direction: column;
+}
+
+.arch-flow-steps-track {
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.arch-flow-step-box {
+  flex: 1;
+  min-width: 0;
+  background: #FFFFFF;
+  border: 1.5px solid;
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 2px 6px rgba(14, 116, 144, 0.05);
+}
+
+.arch-flow-step-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.arch-flow-step-num {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  color: #FFFFFF;
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.arch-flow-step-title {
+  font-family: 'Plus Jakarta Sans', Inter, sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-dark, #0C2A3E);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arch-flow-step-desc {
+  font-size: 11px;
+  line-height: 1.35;
+  color: var(--text-mid, #1E4D6B);
+}
+
+.arch-flow-connector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0 2px;
+}
+
+/* ── 2-Column Grid Layout for Sections 2 & 3 ── */
+.arch-dossier-grid-2col {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 12px;
+}
+
+.arch-section-card {
+  padding: 14px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--card-border, rgba(125,211,252,0.45));
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 2. KHUNG 2: Cơ Chế Hoạt Động (Operating Mechanism) ── */
+.arch-mech-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.arch-mech-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-mid, #1E4D6B);
+}
+
+.arch-mech-step-badge {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  font-weight: 800;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.arch-mech-content {
+  flex: 1;
+}
+
+.arch-mech-title {
+  font-weight: 800;
+  color: var(--text-dark, #0C2A3E);
+}
+
+.arch-mech-text {
+  color: var(--text-mid, #1E4D6B);
+}
+
+/* ── 3. KHUNG 3: Thông Số & Hiệu Năng (Performance & Specs) ── */
+.arch-perf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.arch-perf-cell {
+  background: var(--pastel-sky, #F0F9FF);
+  border: 1.5px solid var(--card-border, rgba(125,211,252,0.45));
+  border-radius: 6px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.arch-perf-lbl {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: var(--text-label, #0E7490);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.arch-perf-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-dark, #0C2A3E);
+  line-height: 1.25;
+}
+
+/* ── 4. KHUNG 4: Luồng Dữ Liệu (Data Flow Contract) ── */
+.arch-dataflow-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.arch-dataflow-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-mid, #1E4D6B);
+}
+
+.arch-dataflow-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 9.5px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.arch-dataflow-tag.in {
+  background: #E0F2FE;
+  color: #0284C7;
+  border: 1px solid #BAE6FD;
+}
+
+.arch-dataflow-tag.out {
+  background: #ECFDF5;
+  color: #059669;
+  border: 1px solid #A7F3D0;
+}
+
+.arch-dataflow-tag.trans {
+  background: #FEF3C7;
+  color: #D97706;
+  border: 1px solid #FDE68A;
+}
+
+.arch-dataflow-desc {
+  color: var(--text-dark, #0C2A3E);
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .arch-flow-steps-track {
+    flex-direction: column;
+  }
+  .arch-flow-connector {
+    transform: rotate(90deg);
+    padding: 4px 0;
+  }
+  .arch-dossier-grid-2col {
+    grid-template-columns: 1fr;
+  }
 }

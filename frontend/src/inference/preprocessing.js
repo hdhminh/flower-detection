@@ -1,16 +1,41 @@
 /**
- * Preprocessing utilities for YOLOv11 ONNX browser inference.
+ * Preprocessing utilities for YOLO ONNX browser inference.
  * Resizes and normalizes HTMLImageElement / HTMLVideoElement / HTMLCanvasElement
  * into a float32 tensor of shape [1, 3, 640, 640] with letterboxing.
- * ORT is loaded via CDN — no npm import needed here.
+ * Uses zero-allocation memory recycling to avoid Garbage Collection (GC) pauses.
  */
 
+// Singleton reusable offscreen canvas and context
+let cachedCanvas = null;
+let cachedCtx = null;
+// Singleton reusable Float32Array buffer (3 * 640 * 640 = 1,228,800 floats)
+let cachedFloat32Data = null;
+
+function getCanvas(targetSize) {
+  if (!cachedCanvas || cachedCanvas.width !== targetSize || cachedCanvas.height !== targetSize) {
+    if (typeof OffscreenCanvas !== 'undefined') {
+      cachedCanvas = new OffscreenCanvas(targetSize, targetSize);
+    } else {
+      cachedCanvas = document.createElement('canvas');
+      cachedCanvas.width = targetSize;
+      cachedCanvas.height = targetSize;
+    }
+    cachedCtx = cachedCanvas.getContext('2d', { willReadFrequently: true });
+  }
+  return { canvas: cachedCanvas, ctx: cachedCtx };
+}
+
+function getBuffer(targetSize) {
+  const requiredLen = 3 * targetSize * targetSize;
+  if (!cachedFloat32Data || cachedFloat32Data.length !== requiredLen) {
+    cachedFloat32Data = new Float32Array(requiredLen);
+  }
+  return cachedFloat32Data;
+}
+
 export function preprocessImage(imageSource, targetSize = 640) {
-  // Create an offscreen canvas for letterboxing
-  const canvas = document.createElement('canvas');
-  canvas.width = targetSize;
-  canvas.height = targetSize;
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+  const { ctx } = getCanvas(targetSize);
+  const float32Data = getBuffer(targetSize);
 
   const srcWidth = imageSource.videoWidth || imageSource.naturalWidth || imageSource.width;
   const srcHeight = imageSource.videoHeight || imageSource.naturalHeight || imageSource.height;
@@ -26,7 +51,7 @@ export function preprocessImage(imageSource, targetSize = 640) {
   const padX = (targetSize - scaledWidth) / 2;
   const padY = (targetSize - scaledHeight) / 2;
 
-  // Fill neutral gray background for letterboxing
+  // Fill neutral gray background for letterboxing (standard YOLO gray: 114/255 = #727272)
   ctx.fillStyle = '#727272';
   ctx.fillRect(0, 0, targetSize, targetSize);
 
@@ -37,24 +62,18 @@ export function preprocessImage(imageSource, targetSize = 640) {
   const { data } = imageData;
 
   // CHW format: [1, 3, 640, 640] normalized [0, 1]
-  const float32Data = new Float32Array(3 * targetSize * targetSize);
   const area = targetSize * targetSize;
 
   for (let i = 0; i < area; i++) {
-    const r = data[i * 4] / 255.0;
-    const g = data[i * 4 + 1] / 255.0;
-    const b = data[i * 4 + 2] / 255.0;
-
+    const i4 = i * 4;
     // R channel
-    float32Data[i] = r;
+    float32Data[i] = data[i4] / 255.0;
     // G channel
-    float32Data[area + i] = g;
+    float32Data[area + i] = data[i4 + 1] / 255.0;
     // B channel
-    float32Data[area * 2 + i] = b;
+    float32Data[area * 2 + i] = data[i4 + 2] / 255.0;
   }
 
-  // Return raw data + dims — let yoloInference.js create the ORT Tensor
-  // so we don't need to import ort here
   return {
     tensor: {
       data: float32Data,

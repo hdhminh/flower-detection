@@ -9,7 +9,7 @@ const FLOWERS_CONFIG = [
   { id: 'chrysanthemum', label_vi: 'Hoa cúc 🌼', label_en: 'Chrysanthemum 🌼', pos: [-4.2, 0, -0.8] },
   { id: 'rose', label_vi: 'Hoa hồng 🌹', label_en: 'Rose 🌹', pos: [-2.1, 0.2, 0.4] },
   { id: 'hydrangea', label_vi: 'Cẩm tú cầu 🌸', label_en: 'Hydrangea 🌸', pos: [0, 0.4, 0.8] },
-  { id: 'lavender', label_vi: 'Oải hương 💜', label_en: 'Lavender 💜', pos: [2.1, 0.2, 0.4] },
+  { id: 'carnation', label_vi: 'Cẩm chướng 🌺', label_en: 'Carnation 🌺', pos: [2.1, 0.2, 0.4] },
   { id: 'sunflower', label_vi: 'Hướng dương 🌻', label_en: 'Sunflower 🌻', pos: [4.2, 0, -0.8] }
 ];
 

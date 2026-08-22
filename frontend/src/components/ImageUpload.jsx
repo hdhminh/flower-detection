@@ -32,10 +32,10 @@ const REAL_SAMPLE_FLOWERS = [
     src: '/images/flowers/hydrangea.jpg'
   },
   {
-    id: 'lavender',
-    name: 'Lavender',
-    symbol: '💜',
-    src: '/images/flowers/lavender.jpg'
+    id: 'carnation',
+    name: 'Carnation',
+    symbol: '🌺',
+    src: '/images/flowers/carnation.jpg'
   }
 ];
 

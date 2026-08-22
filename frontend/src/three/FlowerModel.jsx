@@ -162,29 +162,42 @@ export function FlowerModel({ type = 'rose', position = [0, 0, 0], scale = 1, on
           </group>
         );
 
-      case 'lavender':
+      case 'carnation':
         return (
           <group>
-            {/* Vertical tiered floral spikes */}
-            {[...Array(7)].map((_, tier) => {
-              const y = 0.0 + tier * 0.16;
+            {/* Tubular Green Calyx / Sepal */}
+            <mesh position={[0, 0.05, 0]}>
+              <cylinderGeometry args={[0.15, 0.09, 0.35, 12]} />
+              <meshStandardMaterial color="#2D6A4F" roughness={0.6} />
+            </mesh>
+
+            {/* Concentric Ruffled Petals (Multi-layered carnation bloom) */}
+            {[...Array(4)].map((_, layer) => {
+              const count = 7 + layer * 3;
+              const yPos = 0.18 + layer * 0.09;
+              const radius = 0.22 + layer * 0.07;
+              const petalColors = ["#E64980", "#FF6B9D", "#F783AC", "#FF8787"];
+
               return (
-                <group key={tier} position={[0, y, 0]}>
-                  {[...Array(5)].map((_, j) => {
-                    const angle = (j * 2 * Math.PI) / 5 + tier * 0.4;
-                    const r = 0.18 - tier * 0.015;
+                <group key={layer} position={[0, yPos, 0]}>
+                  {[...Array(count)].map((_, i) => {
+                    const angle = (i * 2 * Math.PI) / count + layer * 0.35;
+                    const tilt = 0.45 - layer * 0.08;
                     return (
                       <mesh
-                        key={j}
-                        position={[Math.cos(angle) * r, 0, Math.sin(angle) * r]}
-                        rotation={[0.3, angle, 0]}
+                        key={i}
+                        position={[Math.cos(angle) * radius, 0, Math.sin(angle) * radius]}
+                        rotation={[tilt, angle, 0.25 * Math.sin(i * 3)]}
+                        scale={[1 + 0.15 * Math.sin(i * 2), 1, 0.9]}
                       >
-                        <capsuleGeometry args={[0.06, 0.14, 4, 8]} />
+                        {/* Wavy/crinkled petal shape */}
+                        <planeGeometry args={[0.26, 0.36, 4, 4]} />
                         <meshStandardMaterial
-                          color={tier % 2 === 0 ? "#9775FA" : "#7950F2"}
-                          roughness={0.4}
-                          emissive="#5F3DC4"
-                          emissiveIntensity={0.2}
+                          color={petalColors[layer % petalColors.length]}
+                          roughness={0.45}
+                          side={2}
+                          emissive="#C2255C"
+                          emissiveIntensity={0.12}
                         />
                       </mesh>
                     );
@@ -192,10 +205,27 @@ export function FlowerModel({ type = 'rose', position = [0, 0, 0], scale = 1, on
                 </group>
               );
             })}
-            {/* Slender stem */}
+
+            {/* Dense Ruffled Core */}
+            <mesh position={[0, 0.46, 0]}>
+              <dodecahedronGeometry args={[0.16, 1]} />
+              <meshStandardMaterial color="#FF6B9D" roughness={0.5} emissive="#D6336C" emissiveIntensity={0.2} />
+            </mesh>
+
+            {/* Slender green stem with leaf nodes */}
             <mesh position={[0, -0.6, 0]}>
-              <cylinderGeometry args={[0.03, 0.03, 1.4, 8]} />
-              <meshStandardMaterial color="#52B788" roughness={0.7} />
+              <cylinderGeometry args={[0.04, 0.04, 1.3, 8]} />
+              <meshStandardMaterial color="#40916C" roughness={0.7} />
+            </mesh>
+
+            {/* Pair of linear slender leaves */}
+            <mesh position={[0.12, -0.4, 0]} rotation={[0.4, 0.5, -0.6]}>
+              <boxGeometry args={[0.35, 0.03, 0.06]} />
+              <meshStandardMaterial color="#52B788" roughness={0.6} />
+            </mesh>
+            <mesh position={[-0.12, -0.55, 0]} rotation={[-0.3, -0.5, 0.6]}>
+              <boxGeometry args={[0.32, 0.03, 0.06]} />
+              <meshStandardMaterial color="#52B788" roughness={0.6} />
             </mesh>
           </group>
         );

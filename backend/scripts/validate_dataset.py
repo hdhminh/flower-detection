@@ -112,7 +112,7 @@ def validate_dataset(dataset_dir: str):
     print(f"Low Resolution (<{MIN_RESOLUTION}px): {total_low_res}")
     print(f"Potentially Blurry   : {total_blurry}")
     print("\nClass Bounding Box Distribution:")
-    flower_names = {0: "chrysanthemum", 1: "rose", 2: "hydrangea", 3: "lavender", 4: "sunflower"}
+    flower_names = {0: "chrysanthemum", 1: "rose", 2: "hydrangea", 3: "carnation", 4: "sunflower", 5: "other_flower"}
     for cid, cnt in sorted(class_counts.items()):
         name = flower_names.get(cid, f"class_{cid}")
         print(f"  - Class {cid} ({name:14s}): {cnt} instances")

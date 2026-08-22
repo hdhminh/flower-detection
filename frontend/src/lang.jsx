@@ -66,8 +66,14 @@ const translations = {
     outputTo: "Output To",
     linkedFiles: "Linked Source Files",
     techSpecs: "Technical Specs",
-    roleLabel: "Core Function",
+    roleLabel: "Core Function & Role",
     resetView: "Reset Focus",
+    archDossierKicker: "PIPELINE COMPONENT DOSSIER",
+    archDiagramFlow: "Node Pipeline Flow Diagram",
+    archOperatingMech: "Operating Mechanism",
+    archPerfSpecs: "Performance & Technical Specs",
+    archDataFlow: "Data Flow Contract (In ➔ Out)",
+    archClickNodeHint: "Click any icon above to open its deep architectural dossier",
 
     // Navigation & Tooltips
     navLanding: "Landing",
@@ -153,8 +159,14 @@ const translations = {
     outputTo: "Truyền dữ liệu đến",
     linkedFiles: "Mã nguồn liên kết",
     techSpecs: "Thông số kỹ thuật",
-    roleLabel: "Chức năng chính",
+    roleLabel: "Vai Trò & Chức Năng Cốt Lõi",
     resetView: "Bỏ chọn",
+    archDossierKicker: "HỒ SƠ THÀNH PHẦN KIẾN TRÚC",
+    archDiagramFlow: "Sơ Đồ Quy Trình Chi Tiết Node",
+    archOperatingMech: "Cơ Chế Hoạt Động",
+    archPerfSpecs: "Thông Số & Hiệu Năng",
+    archDataFlow: "Luồng Dữ Liệu (Đầu Vào ➔ Đầu Ra)",
+    archClickNodeHint: "Nhấp vào bất kỳ biểu tượng nào để mở hồ sơ phân tích chi tiết",
 
     // Navigation & Tooltips
     navLanding: "Trang chủ",

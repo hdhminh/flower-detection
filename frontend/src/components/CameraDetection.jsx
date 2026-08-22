@@ -16,7 +16,10 @@ export function CameraDetection({ onOpenFlowerDetail }) {
   const [fps, setFps] = useState(0);
   const [latency, setLatency] = useState(0);
   const [backendType, setBackendType] = useState('WASM');
-  const [videoDimensions, setVideoDimensions] = useState({ width: 640, height: 480 });
+  // Display dimensions of the video-viewport container (canvas overlay size)
+  const [containerDims, setContainerDims] = useState({ width: 640, height: 480 });
+  // Native resolution of the video stream (for coordinate mapping)
+  const [nativeVideoDims, setNativeVideoDims] = useState({ width: 640, height: 480 });
   const [isModelLoading, setIsModelLoading] = useState(false);
   const [modelProgress, setModelProgress] = useState(0);
   const [devices, setDevices] = useState([]);
@@ -25,6 +28,7 @@ export function CameraDetection({ onOpenFlowerDetail }) {
   const animFrameId = useRef(null);
   const isInferencing = useRef(false);
   const lastInferenceTimestamp = useRef(0);
+  const resizeObserverRef = useRef(null);
 
   useEffect(() => {
     async function getDevices() {
@@ -96,6 +100,10 @@ export function CameraDetection({ onOpenFlowerDetail }) {
     if (animFrameId.current) {
       cancelAnimationFrame(animFrameId.current);
     }
+    if (resizeObserverRef.current) {
+      resizeObserverRef.current.disconnect();
+      resizeObserverRef.current = null;
+    }
     setIsStreaming(false);
     setDetections([]);
     setFps(0);
@@ -130,14 +138,22 @@ export function CameraDetection({ onOpenFlowerDetail }) {
 
         try {
           if (video.videoWidth && video.videoHeight) {
-            setVideoDimensions({
-              width: video.clientWidth,
-              height: video.clientHeight
-            });
+            // Track native video resolution for coord mapping
+            setNativeVideoDims({ width: video.videoWidth, height: video.videoHeight });
           }
 
           const result = await defaultDetector.detect(video, confThreshold);
-          setDetections(result.detections || []);
+          setDetections((prev) => {
+            const now = Date.now();
+            const current = (result.detections || []).map(d => ({ ...d, ttl: now + 1000 }));
+            const merged = [...current];
+            for (const p of prev) {
+              if (p.ttl > now && !current.some(c => c.classId === p.classId)) {
+                merged.push(p);
+              }
+            }
+            return merged;
+          });
           setFps(result.fps || 0);
           setLatency(result.durationMs || 0);
           setBackendType(result.backend || 'WASM');
@@ -153,6 +169,21 @@ export function CameraDetection({ onOpenFlowerDetail }) {
 
     animFrameId.current = requestAnimationFrame(loop);
   }, [isPaused, confThreshold]);
+
+  // Sync canvas size with container whenever it resizes
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const { width, height } = entry.contentRect;
+        setContainerDims({ width: Math.round(width), height: Math.round(height) });
+      }
+    });
+    ro.observe(container);
+    resizeObserverRef.current = ro;
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     if (isStreaming && !isPaused) {
@@ -204,16 +235,24 @@ export function CameraDetection({ onOpenFlowerDetail }) {
                 muted
                 className="webcam-video"
                 onLoadedMetadata={(e) => {
-                  setVideoDimensions({
+                  // Set container display size
+                  setContainerDims({
                     width: e.target.clientWidth,
                     height: e.target.clientHeight
+                  });
+                  // Set native video resolution
+                  setNativeVideoDims({
+                    width: e.target.videoWidth,
+                    height: e.target.videoHeight
                   });
                 }}
               />
               <DetectionOverlay
                 detections={detections}
-                width={videoDimensions.width}
-                height={videoDimensions.height}
+                width={containerDims.width}
+                height={containerDims.height}
+                srcWidth={nativeVideoDims.width}
+                srcHeight={nativeVideoDims.height}
               />
             </>
           ) : (

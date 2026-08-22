@@ -432,12 +432,12 @@ body {
   background: rgba(255, 255, 255, 0.45);
   border: 1.5px solid var(--card-border);
   padding: 3px;
-  border-radius: 8px;
+  border-radius: 7px;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 2px 10px rgba(14, 116, 144, 0.08);
-  height: 42px;
-  width: 230px;
+  height: 36px;
+  width: 200px;
   user-select: none;
 }
 
@@ -448,7 +448,7 @@ body {
   left: 3px;
   width: calc(50% - 3px);
   background: #FFFFFF;
-  border-radius: 6px;
+  border-radius: 5px;
   box-shadow: 0 2px 8px rgba(14, 116, 144, 0.18), 0 1px 2px rgba(0, 0, 0, 0.06);
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   pointer-events: none;
@@ -471,10 +471,10 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 0 10px;
-  border-radius: 6px;
-  font-size: 14.5px;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 5px;
+  font-size: 12.5px;
   font-weight: 600;
   color: var(--text-muted);
   background: transparent;
@@ -598,18 +598,18 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
-  max-width: 540px;
-  padding: 30px 20px;
+  gap: 8px;
+  max-width: 480px;
+  padding: 24px 16px;
   color: var(--text-dark);
-  transform: translateY(-16px);
+  transform: translateY(-12px);
   cursor: pointer;
   user-select: none;
 }
 
 .camera-icon-ring {
-  width: 90px;
-  height: 90px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   border: 1.5px solid rgba(125, 211, 252, 0.6);
   background: rgba(125, 211, 252, 0.22);
@@ -630,14 +630,14 @@ body {
 }
 
 .camera-standby-state h3 {
-  font-size: 1.45rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: #0C2A3E;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 .camera-standby-desc {
-  font-size: 15.5px;
+  font-size: 12.5px;
   font-weight: 600;
   line-height: 1.4;
   color: #334155;
@@ -663,20 +663,20 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   text-align: center;
-  padding: 30px 20px;
-  border: none; /* Removed dashed border */
+  padding: 24px 16px;
+  border: none;
   background: transparent;
   color: var(--text-dark);
-  max-width: 420px;
-  transform: translateY(-20px);
+  max-width: 400px;
+  transform: translateY(-12px);
   transition: all 0.25s ease;
 }
 
 .upload-icon-ring {
-  width: 90px;
-  height: 90px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   background: rgba(125, 211, 252, 0.22);
   border: 1.5px solid rgba(125, 211, 252, 0.6);
@@ -697,15 +697,14 @@ body {
 }
 
 .upload-dropzone-inner h3 {
-  font-size: 1.45rem;
+  font-size: 1.15rem;
   font-weight: 800;
   color: #0C2A3E;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
-.upload-standby-desc,
-.camera-standby-desc {
-  font-size: 15.5px;
+.upload-standby-desc {
+  font-size: 12.5px;
   font-weight: 600;
   line-height: 1.4;
   color: #334155;
@@ -722,9 +721,9 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 8px;
   color: #fff;
-  font-size: 14px;
+  font-size: 12.5px;
   z-index: 20;
 }
 .spin-loader { animation: spin 0.8s linear infinite; }
@@ -845,7 +844,7 @@ body {
   background: rgba(255,255,255,0.50);
   border: 1.5px solid var(--card-border);
   border-radius: 10px;
-  padding: 22px;
+  padding: 16px 18px;
   backdrop-filter: blur(14px);
   box-shadow: 0 4px 20px rgba(14,116,144,0.08);
 }
@@ -854,16 +853,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-bottom: 14px;
+  padding-bottom: 10px;
   border-bottom: 1.5px solid var(--card-border);
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .hud-title-group {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16.5px;
+  gap: 6px;
+  font-size: 13.5px;
   font-weight: 800;
   color: var(--text-dark);
 }
@@ -871,8 +870,8 @@ body {
 .model-ready-dot {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 5px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #059669;
 }
@@ -888,8 +887,8 @@ body {
 .model-loading-dot {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 5px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #D97706;
 }
@@ -906,13 +905,13 @@ body {
 .model-error-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-size: 13px;
+  gap: 5px;
+  font-size: 11.5px;
   font-weight: 700;
   color: #DC2626;
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 4px;
   cursor: pointer;
   transition: background 0.15s;
@@ -931,69 +930,73 @@ body {
 .hud-body-content { flex: 1; display: flex; flex-direction: column; }
 
 .hud-empty-state {
+  padding: 40px 16px;
+  text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #334155;
-  text-align: center;
-  margin-top: -20px;
+  gap: 8px;
+  color: #475569;
+  margin-top: -10px;
 }
+.hud-empty-state p { font-size: 13.5px; font-weight: 800; color: #0C2A3E; margin: 4px 0 0 0; }
+.hud-empty-state span { font-size: 12px; font-weight: 600; color: #334155; }
 
 .pastel-spinner {
-  width: 34px;
-  height: 34px;
-  border: 2.5px solid rgba(125,211,252,0.3);
+  width: 28px;
+  height: 28px;
+  border: 2px solid rgba(125,211,252,0.3);
   border-top-color: var(--pastel-sky-deep);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
-.hud-targets-list { display: flex; flex-direction: column; gap: 12px; }
+.hud-targets-list { display: flex; flex-direction: column; gap: 8px; }
 
 .targets-counter {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
+  font-size: 11.5px;
   font-weight: 800;
-  letter-spacing: 1px;
+  letter-spacing: 0.8px;
   color: var(--text-label);
   text-transform: uppercase;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .target-result-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 10px 14px;
   background: rgba(255,255,255,0.65);
   border: 1.5px solid var(--card-border);
   border-left-width: 4px;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .target-meta-info h4 {
-  font-size: 16.5px;
+  font-size: 13.5px;
   font-weight: 800;
   color: var(--text-dark);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .confidence-track {
-  width: 120px;
-  height: 6px;
+  width: 100px;
+  height: 5px;
   background: rgba(125,211,252,0.25);
   border-radius: 3px;
   overflow: hidden;
 }
 .confidence-fill { height: 100%; border-radius: 3px; }
 
-.target-action-col { display: flex; align-items: center; gap: 12px; }
+.target-action-col { display: flex; align-items: center; gap: 10px; }
 
 .pct-num {
   font-family: 'JetBrains Mono', monospace;
-  font-size: 16.5px;
+  font-size: 13.5px;
   font-weight: 800;
   color: var(--text-dark);
 }
@@ -1001,30 +1004,18 @@ body {
 .btn-open-dossier {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
+  gap: 5px;
+  padding: 5px 12px;
   background: rgba(125,211,252,0.2);
   color: #0369A1;
   border: 1.2px solid var(--card-border);
-  border-radius: 6px;
-  font-size: 13.5px;
+  border-radius: 5px;
+  font-size: 11.5px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
 }
 .btn-open-dossier:hover { background: var(--pastel-sky-deep); color: #fff; }
-
-.hud-empty-state {
-  padding: 80px 20px;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  color: #475569;
-}
-.hud-empty-state p { font-size: 18px; font-weight: 800; color: #0C2A3E; margin: 4px 0 0 0; }
-.hud-empty-state span { font-size: 15px; font-weight: 600; color: #334155; }
 
 /* ========================================================================= */
 /* TOAST DETECTION RESULTS                                                   */
@@ -1561,5 +1552,52 @@ body {
   border-top: 1px solid var(--card-border);
   display: flex;
   justify-content: flex-end;
+}
+
+
+/* Camera Detection specific styles */
+.camera-detection-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+.camera-card {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+}
+.video-viewport {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16/9;
+  background-color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.webcam-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* fill viewport, no black bars - overlay coords match */
+}
+.camera-controls-bar {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-card-hover);
+}
+.live-detections-feed {
+  margin-top: 1rem;
+}
+.detected-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
 }
 

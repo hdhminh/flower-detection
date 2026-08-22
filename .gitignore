@@ -19,8 +19,14 @@ runs/
 .pytest_cache/
 backend/training/dataset*/
 backend/training/test_dl/
+backend/training/data/
+test_icrawler_dir/
+*.png
 
-# Large redundant binaries & unused models
+# Large redundant binaries & unused old models
 frontend/public/onnx-wasm/
 frontend/public/models/flower_yolo11s.onnx
-
+frontend/public/models/flower_yolo11m.onnx
+frontend/public/models/flower_yolo26s_v6.onnx
+frontend/public/models/flower_yolo26s_v12.onnx
+frontend/public/models/flower_yolo26s_v13.onnx
