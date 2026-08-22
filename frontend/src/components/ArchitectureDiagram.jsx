@@ -21,10 +21,10 @@ const RH = 54;     // hero radius (ONNX)
 const NODES = {
   camera:  { Icon:Camera,            en:'Camera',          vi:'Camera',          sub:'WebRTC · 30 FPS',       layer:0, x:110,  y:CY-125, color:'#0284C7' },
   upload:  { Icon:Upload,            en:'File Upload',     vi:'Tải Ảnh Lên',     sub:'Drag & Drop',            layer:0, x:110,  y:CY+125, color:'#0284C7' },
-  preproc: { Icon:ScanLine,          en:'Preprocessor',    vi:'Tiền Xử Lý',      sub:'640×640 · Float32',      layer:1, x:350,  y:CY,     color:'#0D9488' },
-  onnx:    { Icon:Brain,             en:'YOLOv11s WASM',   vi:'YOLOv11s WASM',   sub:'On-Device · Zero Cloud', layer:2, x:625,  y:CY,     color:'#F59E0B', hero:true },
+  preproc: { Icon:ScanLine,          en:'Preprocessor',    vi:'Tiền Xử Lý',      sub:'Zero-Alloc · 640px',     layer:1, x:350,  y:CY,     color:'#0D9488' },
+  onnx:    { Icon:Brain,             en:'YOLOv14 WebGPU',  vi:'YOLOv14 WebGPU',  sub:'Hardware GPU · On-Device', layer:2, x:625,  y:CY,     color:'#F59E0B', hero:true },
   decode:  { Icon:Package,           en:'Box Decoder',     vi:'Giải Mã Hộp',     sub:'Coord Mapping',          layer:3, x:900,  y:CY-125, color:'#8B5CF6' },
-  nms:     { Icon:SlidersHorizontal, en:'NMS Filter',      vi:'Lọc NMS',         sub:'IoU ≤ 0.45',             layer:3, x:900,  y:CY+125, color:'#8B5CF6' },
+  nms:     { Icon:SlidersHorizontal, en:'NMS Filter',      vi:'Lọc NMS',         sub:'Class-Wise · IoU ≤ 0.45', layer:3, x:900,  y:CY+125, color:'#8B5CF6' },
   hud:     { Icon:Monitor,           en:'HUD Canvas',      vi:'Canvas HUD',      sub:'60 FPS · Real-time',     layer:4, x:1145, y:CY,     color:'#06B6D4' },
   api:     { Icon:Server,            en:'FastAPI Server',  vi:'FastAPI Server',  sub:'REST · Python',          layer:5, x:1335, y:CY-125, color:'#10B981' },
   db:      { Icon:Leaf,              en:'Botanical DB',    vi:'CSDL Thực Vật',   sub:'Taxonomic Store',        layer:5, x:1335, y:CY+125, color:'#059669' },
@@ -99,33 +99,33 @@ export const NODE_DETAILS = {
       { num: '03', title: 'Bitmap Decode', sub: 'Decodes into memory as an HTMLImageElement object' }
     ],
     flowStepsVi: [
-      { num: '01', title: 'Tiếp nhận tệp', sub: 'Bắt sự kiện kéo thả chuột hoặc chọn tệp qua hộp thoại' },
-      { num: '02', title: 'Tạo Blob & Sửa EXIF', sub: 'Tạo Blob URL và tự động xoay đúng góc theo thẻ EXIF' },
-      { num: '03', title: 'Giải mã Bitmap', sub: 'Giải mã nhị phân thành đối tượng HTMLImageElement' }
+      { num: '01', title: 'Chọn file / Kéo thả', sub: 'Bắt sự kiện kéo thả hoặc hộp thoại tải ảnh' },
+      { num: '02', title: 'Khởi tạo Blob & EXIF', sub: 'Tạo URL Blob bộ nhớ và tự động xoay ảnh theo EXIF' },
+      { num: '03', title: 'Giải mã Bitmap', sub: 'Giải mã ảnh trực tiếp vào bộ nhớ đối tượng HTMLImageElement' }
     ],
 
     mechanismEn: [
-      { step: 'Step 1 (Event Listener)', text: 'Listens for dragenter, dragover, drop events or file picker change events.' },
-      { step: 'Step 2 (Validation & EXIF)', text: 'Validates supported MIME types (JPG, PNG, WebP) and inspects EXIF orientation tags.' },
-      { step: 'Step 3 (In-Memory Decode)', text: 'Generates an ephemeral object URL with URL.createObjectURL() and loads image bitmap into RAM.' }
+      { step: 'Step 1 (Event Interception)', text: 'Listens for dragover, drop, and file input changes, rejecting non-image MIME types.' },
+      { step: 'Step 2 (Zero-Upload Blob)', text: 'Instantiates URL.createObjectURL(file) for instant client-side rendering without network roundtrips.' },
+      { step: 'Step 3 (Image Instantiation)', text: 'Loads bitmap dimensions (naturalWidth, naturalHeight) for downstream letterbox scaling.' }
     ],
     mechanismVi: [
-      { step: 'Bước 1 (Lắng nghe sự kiện)', text: 'Bắt sự kiện kéo thả file DragEvent hoặc chọn file từ thẻ input trên thiết bị.' },
-      { step: 'Bước 2 (Kiểm tra & Sửa hướng)', text: 'Xác thực định dạng MIME (JPG, PNG, WebP) và tự động sửa góc quay ảnh theo EXIF Orientation.' },
-      { step: 'Bước 3 (Giải mã bộ nhớ)', text: 'Tạo Blob URL qua URL.createObjectURL() và nạp ma trận điểm ảnh vào RAM.' }
+      { step: 'Bước 1 (Bắt sự kiện kéo thả)', text: 'Lắng nghe sự kiện dragover, drop và thay đổi file, lọc bỏ các tệp không phải định dạng hình ảnh.' },
+      { step: 'Bước 2 (Tạo Blob cục bộ)', text: 'Khởi tạo URL.createObjectURL(file) để hiển thị ảnh tức thì trên trình duyệt mà không cần gửi lên máy chủ.' },
+      { step: 'Bước 3 (Đọc kích thước gốc)', text: 'Đọc độ phân giải gốc (naturalWidth, naturalHeight) phục vụ cho bước tính toán letterbox chuẩn.' }
     ],
 
     perfEn: [
-      { label: 'Parse & Load Time', value: '< 10 ms' },
-      { label: 'Supported Formats', value: 'JPG, PNG, WEBP, HEIC' },
-      { label: 'Max Resolution', value: 'Up to 8K (8192×8192)' },
-      { label: 'Max File Size', value: 'Up to 25 MB/photo' }
+      { label: 'File Ingestion Latency', value: '< 10 ms (Instant)' },
+      { label: 'Supported Formats', value: 'JPG, PNG, WebP, AVIF, HEIC' },
+      { label: 'Client Memory Impact', value: 'Temporary Blob RAM only' },
+      { label: 'Network Bandwidth', value: '0 KB/s (Zero Server Upload)' }
     ],
     perfVi: [
-      { label: 'Thời gian đọc nạp', value: '< 10 ms' },
-      { label: 'Định dạng hỗ trợ', value: 'JPG, PNG, WEBP, HEIC' },
-      { label: 'Độ phân giải tối đa', value: 'Lên đến 8K (8192×8192)' },
-      { label: 'Dung lượng hỗ trợ', value: 'Tối đa 25 MB/ảnh' }
+      { label: 'Thời gian nạp tệp', value: '< 10 ms (Tức thì)' },
+      { label: 'Định dạng hỗ trợ', value: 'JPG, PNG, WebP, AVIF, HEIC' },
+      { label: 'Dung lượng RAM', value: 'Chỉ lưu đệm Blob tạm thời' },
+      { label: 'Băng thông mạng', value: '0 KB/s (Không upload server)' }
     ],
 
     dataFlowEn: {
@@ -143,216 +143,215 @@ export const NODE_DETAILS = {
   preproc: {
     layerEn: '02 · PREPROCESS LAYER',
     layerVi: '02 · TẦNG TIỀN XỬ LÝ',
-    nameEn: 'Image Preprocessor & Letterbox',
-    nameVi: 'Bộ Tiền Xử Lý & Chuẩn Hóa Ảnh',
-    techTag: 'Canvas2D • 640×640 Letterboxing • NCHW Float32 Normalization',
+    nameEn: 'Zero-Allocation Preprocessor & Letterbox',
+    nameVi: 'Bộ Tiền Xử Lý Zero-Allocation & Letterbox',
+    techTag: 'OffscreenCanvas • Zero-Alloc Float32 Recycling • Planar NCHW [1, 3, 640, 640]',
 
     flowStepsEn: [
-      { num: '01', title: 'Letterbox Scaling', sub: 'Computes scale factor to preserve flower aspect ratio' },
-      { num: '02', title: 'Canvas Padding', sub: 'Renders onto 640×640 OffscreenCanvas with gray (#727272)' },
-      { num: '03', title: 'Float32 NCHW', sub: 'Separates RGB channels & normalizes pixel range to [0.0, 1.0]' }
+      { num: '01', title: 'Letterbox Scaling', sub: 'Calculates exact scale factor to preserve petal morphology' },
+      { num: '02', title: 'Canvas Padding', sub: 'Renders onto cached 640×640 OffscreenCanvas with #727272 gray' },
+      { num: '03', title: 'Buffer Recycling', sub: 'Pours normalized RGB into pre-allocated Float32Array (0ms GC)' }
     ],
     flowStepsVi: [
-      { num: '01', title: 'Tính tỉ lệ Letterbox', sub: 'Tính hệ số co giãn bảo toàn nguyên vẹn tỉ lệ cánh hoa' },
-      { num: '02', title: 'Đệm viền Canvas', sub: 'Vẽ lên OffscreenCanvas 640×640 với viền xám trung tính' },
-      { num: '03', title: 'Chuẩn hóa Float32', sub: 'Tách 3 kênh RGB & chuẩn hóa giá trị về khoảng [0.0, 1.0]' }
+      { num: '01', title: 'Khóa tỉ lệ Letterbox', sub: 'Tính hệ số scale chính xác bảo toàn nguyên vẹn hình thái cánh hoa' },
+      { num: '02', title: 'Đệm viền Canvas', sub: 'Vẽ lên OffscreenCanvas đệm tĩnh 640×640 với viền xám trung tính #727272' },
+      { num: '03', title: 'Tái sử dụng bộ nhớ', sub: 'Đổ RGB chuẩn hóa vào mảng Float32Array cấp phát sẵn (0ms rác GC)' }
     ],
 
     mechanismEn: [
-      { step: 'Step 1 (Aspect Ratio Lock)', text: 'Calculates scaling multiplier and padding offsets (padX, padY) to fit inside 640×640 without distortion.' },
-      { step: 'Step 2 (Offscreen Draw)', text: 'Fills canvas with neutral gray (114, 114, 114) and draws image centered with bilinear filtering.' },
-      { step: 'Step 3 (Planar Tensor Format)', text: 'Extracts ImageData Uint8ClampedArray, divides each pixel by 255.0, and reshapes into Planar NCHW [1, 3, 640, 640].' }
+      { step: 'Step 1 (Aspect Ratio Preservation)', text: 'Calculates scaling multiplier and padding offsets (padX, padY) to fit perfectly inside 640×640 without distortion.' },
+      { step: 'Step 2 (Offscreen Draw & Bilinear Filter)', text: 'Fills reusable canvas with neutral gray (114, 114, 114) and draws image centered with bilinear anti-aliasing.' },
+      { step: 'Step 3 (Zero-Allocation Planar Tensor)', text: 'Directly reads ImageData and writes normalized [0.0, 1.0] pixels into a persistent static Float32Array, completely avoiding garbage collection pauses.' }
     ],
     mechanismVi: [
-      { step: 'Bước 1 (Khóa tỉ lệ khung hình)', text: 'Tính hệ số scale và khoảng đệm viền xám (114, 114, 114) để vừa khít 640×640 mà không bị méo.' },
-      { step: 'Bước 2 (Vẽ OffscreenCanvas)', text: 'Lấp viền bằng màu xám trung tính và vẽ ảnh căn giữa với bộ lọc song tuyến Bilinear mịn màng.' },
-      { step: 'Bước 3 (Chuẩn hóa Tensor)', text: 'Trích xuất ImageData, chia từng pixel cho 255.0 và sắp xếp theo định dạng Planar NCHW [1, 3, 640, 640].' }
+      { step: 'Bước 1 (Bảo toàn tỉ lệ khung hình)', text: 'Tính hệ số scale và khoảng đệm viền xám (114, 114, 114) để ảnh vừa khít 640×640 mà không bị co méo hình học.' },
+      { step: 'Bước 2 (Vẽ OffscreenCanvas tái sử dụng)', text: 'Lấp viền bằng màu xám tiêu chuẩn YOLO (#727272) và vẽ ảnh căn giữa với bộ lọc khử răng cưa mượt mà.' },
+      { step: 'Bước 3 (Ghi trực tiếp vào Tensor tĩnh)', text: 'Trích xuất ImageData và ghi thẳng các giá trị chuẩn hóa [0.0, 1.0] vào mảng Float32Array cố định, triệt tiêu 100% độ trễ dọn rác GC.' }
     ],
 
     perfEn: [
-      { label: 'Execution Runtime', value: '~2.0 - 4.0 ms' },
+      { label: 'Execution Runtime', value: '~1.5 - 3.0 ms' },
       { label: 'Target Canvas Size', value: '640 × 640 px' },
-      { label: 'Tensor Memory Layout', value: 'Planar NCHW [1, 3, 640, 640]' },
-      { label: 'Pixel Data Range', value: 'Float32 [0.0, 1.0]' }
+      { label: 'Memory Allocation', value: '0 bytes / frame (Recycled Buffer)' },
+      { label: 'Tensor Layout', value: 'Planar NCHW Float32 [1, 3, 640, 640]' }
     ],
     perfVi: [
-      { label: 'Thời gian xử lý', value: '~2.0 - 4.0 ms' },
+      { label: 'Thời gian xử lý', value: '~1.5 - 3.0 ms' },
       { label: 'Kích thước chuẩn', value: '640 × 640 px' },
-      { label: 'Cấu trúc Tensor', value: 'Planar NCHW [1, 3, 640, 640]' },
-      { label: 'Khoảng giá trị', value: 'Float32 [0.0, 1.0]' }
+      { label: 'Cấp phát bộ nhớ', value: '0 byte / frame (Tái sử dụng)' },
+      { label: 'Cấu trúc Tensor', value: 'Planar NCHW Float32 [1, 3, 640, 640]' }
     ],
 
     dataFlowEn: {
       input: 'Raw HTMLVideoElement or HTMLImageElement',
       output: 'ort.Tensor("float32", [1, 3, 640, 640])',
-      transform: 'Letterboxes aspect ratio and transforms HWC [0..255] to NCHW Float32 [0..1]'
+      transform: 'Letterbox padding + Direct conversion from HWC [0..255] to NCHW Float32 [0..1]'
     },
     dataFlowVi: {
       input: 'Thẻ HTMLVideoElement hoặc HTMLImageElement gốc',
       output: 'ort.Tensor("float32", [1, 3, 640, 640])',
-      transform: 'Letterbox giữ tỉ lệ + chuyển đổi từ HWC [0..255] sang NCHW Float32 [0..1]'
+      transform: 'Đệm viền Letterbox + Ghi trực tiếp từ HWC [0..255] sang NCHW Float32 [0..1]'
     }
   },
 
   onnx: {
     layerEn: '03 · AI INFERENCE LAYER',
     layerVi: '03 · TẦNG SUY LUẬN AI',
-    nameEn: 'YOLOv11s WASM Neural Engine',
-    nameVi: 'Mô Hình YOLOv11s WASM On-Device',
-    techTag: 'ONNX Runtime Web • WebAssembly SIMD • Multi-threaded Workers',
+    nameEn: 'YOLOv14 Multi-Scale WebGPU Neural Engine',
+    nameVi: 'Mô Hình YOLOv14 Multi-Scale WebGPU On-Device',
+    techTag: 'ONNX Runtime Web 1.18 • WebGPU (DirectX 12 / Vulkan) • WASM SIMD Fallback • 6 Classes',
 
     flowStepsEn: [
-      { num: '01', title: 'Tensor Ingestion', sub: 'Feeds normalized [1, 3, 640, 640] tensor into WASM engine' },
-      { num: '02', title: 'SIMD Forward Pass', sub: 'Executes YOLOv11s C3k2, SPPF, & detection head layers' },
-      { num: '03', title: 'Raw Prediction', sub: 'Produces raw output tensor [1, 84, 8400] candidates' }
+      { num: '01', title: 'GPU Tensor Ingestion', sub: 'Pipes normalized [1, 3, 640, 640] tensor directly into WebGPU shaders' },
+      { num: '02', title: 'Multi-Scale Forward Pass', sub: 'Executes YOLOv14 C3k2, SPPF, & multi-scale dynamic resolution pyramid' },
+      { num: '03', title: 'End-to-End Prediction', sub: 'Generates candidate detections matrix [1, 300, 6] on GPU' }
     ],
     flowStepsVi: [
-      { num: '01', title: 'Nạp Tensor đầu vào', sub: 'Nạp Tensor chuẩn hóa [1, 3, 640, 640] vào phiên WASM' },
-      { num: '02', title: 'Lan truyền SIMD', sub: 'Thực thi các khối C3k2, SPPF và phần đầu nhận diện Head' },
-      { num: '03', title: 'Xuất ma trận dự đoán', sub: 'Tạo Tensor đầu ra thô [1, 84, 8400] chứa 8.400 ứng viên' }
+      { num: '01', title: 'Nạp Tensor vào GPU', sub: 'Truyền Tensor chuẩn hóa [1, 3, 640, 640] thẳng vào Shader của GPU qua WebGPU' },
+      { num: '02', title: 'Lan truyền Multi-Scale', sub: 'Thực thi các khối C3k2, SPPF và kim tự tháp đặc trưng đa tỷ lệ Multi-Scale' },
+      { num: '03', title: 'Xuất ma trận dự đoán', sub: 'Xuất ma trận ứng viên nhận diện [1, 300, 6] trực tiếp từ GPU' }
     ],
 
     mechanismEn: [
-      { step: 'Step 1 (Session Initialization)', text: 'Loads YOLOv11 ONNX graph into ONNX Runtime Web with SIMD acceleration and Web Worker pool.' },
-      { step: 'Step 2 (Feature Extraction)', text: 'Computes deep convolutional feature maps with C3k2 cross-stage blocks and spatial pyramid pooling.' },
-      { step: 'Step 3 (Anchor-Free Prediction)', text: 'Generates bounding box coordinates and class probability logits across 8,400 spatial grid cells.' }
+      { step: 'Step 1 (WebGPU Hardware Pipeline)', text: 'Binds ONNX graph directly to device GPU compute shaders (DirectX 12 on Windows, Vulkan on Linux/Android, Metal on macOS/iOS).' },
+      { step: 'Step 2 (Multi-Scale Feature Extraction)', text: 'Computes deep convolutions trained with dynamic multi-scale resolutions (448px - 1280px) for extreme detail on both tiny petals and massive blooms.' },
+      { step: 'Step 3 (High-Throughput Output)', text: 'Outputs 300 candidate predictions with high-precision bounding box coordinates and 6-class flower probability distributions.' }
     ],
     mechanismVi: [
-      { step: 'Bước 1 (Khởi tạo phiên AI)', text: 'Nạp mô hình ONNX vào ONNX Runtime Web với backend WebAssembly SIMD và đa luồng Web Workers.' },
-      { step: 'Bước 2 (Trích xuất đặc trưng)', text: 'Tính toán qua các khối tích chập C3k2, SPPF và phần đầu phân loại Head.' },
-      { step: 'Bước 3 (Dự đoán không điểm neo)', text: 'Tạo ma trận đầu ra chứa tọa độ bounding box và xác suất của từng loài hoa trên 8.400 cell.' }
+      { step: 'Bước 1 (Khởi tạo luồng WebGPU phần cứng)', text: 'Nạp đồ thị ONNX trực tiếp vào Shaders tính toán của Card đồ họa (DirectX 12 trên Windows, Vulkan trên Android, Metal trên Apple).' },
+      { step: 'Bước 2 (Trích xuất đặc trưng đa tỷ lệ)', text: 'Thực thi mạng nơ-ron huấn luyện Multi-Scale (448px - 1280px), bắt nét vượt trội từ cánh hoa cúc li ti đến chùm cẩm tú cầu lớn.' },
+      { step: 'Bước 3 (Xuất ma trận nhận diện tốc độ cao)', text: 'Xuất 300 ứng viên nhận diện với tọa độ bounding box chuẩn xác và phân phối xác suất trên 6 lớp hoa.' }
     ],
 
     perfEn: [
-      { label: 'Inference Latency', value: '~25 - 40 ms / frame' },
-      { label: 'Model File Size', value: '~10.7 MB (ONNX)' },
-      { label: 'Candidate Grid Cells', value: '8,400 anchor-free cells' },
-      { label: 'Parallel Web Workers', value: '4 CPU threads (SIMD)' }
+      { label: 'Inference Latency', value: '~15 - 30 ms / frame (WebGPU)' },
+      { label: 'Model File Size', value: '~38.1 MB (ONNX Opset 17)' },
+      { label: 'Trained Epochs & Architecture', value: '60 Epochs · Multi-Scale YOLOv14' },
+      { label: 'Hardware Acceleration', value: 'WebGPU Shader Engine (GPU Native)' }
     ],
     perfVi: [
-      { label: 'Thời gian suy luận', value: '~25 - 40 ms / frame' },
-      { label: 'Dung lượng mô hình', value: '~10.7 MB (ONNX)' },
-      { label: 'Số cell dự đoán', value: '8.400 điểm neo (Anchor-free)' },
-      { label: 'Đa luồng Web Workers', value: '4 luồng song song (SIMD)' }
+      { label: 'Thời gian suy luận', value: '~15 - 30 ms / frame (WebGPU)' },
+      { label: 'Dung lượng mô hình', value: '~38.1 MB (ONNX Opset 17)' },
+      { label: 'Huấn luyện & Kiến trúc', value: '60 Epochs · Multi-Scale YOLOv14' },
+      { label: 'Tăng tốc phần cứng', value: 'WebGPU Native Shaders (Card GPU)' }
     ],
 
     dataFlowEn: {
       input: 'Normalized float tensor ort.Tensor("float32", [1, 3, 640, 640])',
-      output: 'Raw prediction tensor ort.Tensor("float32", [1, 84, 8400])',
-      transform: 'Deep convolutional forward pass extracting multi-scale botanical features'
+      output: 'Candidate prediction tensor ort.Tensor("float32", [1, 300, 6])',
+      transform: 'Deep multi-scale convolutional neural inference mapping pixel textures to botanical classes'
     },
     dataFlowVi: {
       input: 'Tensor chuẩn hóa ort.Tensor("float32", [1, 3, 640, 640])',
-      output: 'Tensor dự đoán thô ort.Tensor("float32", [1, 84, 8400])',
-      transform: 'Mạng nơ-ron sâu trích xuất đặc trưng hình thái cánh và nhụy hoa'
+      output: 'Tensor dự đoán ứng viên ort.Tensor("float32", [1, 300, 6])',
+      transform: 'Mạng nơ-ron tích chập đa tỷ lệ ánh xạ cấu trúc vân cánh và nhụy hoa thành phân lớp thực vật'
     }
   },
 
   decode: {
     layerEn: '04 · POST-PROCESS LAYER',
     layerVi: '04 · TẦNG HẬU XỬ LÝ',
-    nameEn: 'Bounding Box Decoder',
-    nameVi: 'Bộ Giải Mã Khung Tọa Độ',
-    techTag: 'Center-to-Corner Transformation • Inverse Letterbox Mapping',
+    nameEn: 'Bounding Box Decoder & Coordinate Mapper',
+    nameVi: 'Bộ Giải Mã Tọa Độ & Ánh Xạ Khung Viền',
+    techTag: 'Letterbox Inversion • Aspect Ratio Unpadding • Vectorized Coordinate Mapping',
 
     flowStepsEn: [
-      { num: '01', title: 'Matrix Slicing', sub: 'Parses 8,400 candidate columns in raw output tensor' },
-      { num: '02', title: 'Argmax & Threshold', sub: 'Finds top class score & filters out low scores (< 0.40)' },
-      { num: '03', title: 'Coordinate Inversion', sub: 'Applies inverse letterbox formula to canvas pixels' }
+      { num: '01', title: 'Candidate Iteration', sub: 'Iterates through 300 candidate rows in output tensor' },
+      { num: '02', title: 'Confidence Gate', sub: 'Filters out low-confidence noise with adaptive threshold (≥ 0.35)' },
+      { num: '03', title: 'Coordinate Inversion', sub: 'Maps letterbox coordinates back to original video/image canvas' }
     ],
     flowStepsVi: [
-      { num: '01', title: 'Duyệt ma trận', sub: 'Quét nhanh qua 8.400 cột ứng viên trong Tensor đầu ra' },
-      { num: '02', title: 'Lọc Argmax', sub: 'Tìm nhãn hoa điểm cao nhất & loại bỏ điểm thấp (< 0.40)' },
-      { num: '03', title: 'Ánh xạ nghịch đảo', sub: 'Chuyển đổi tọa độ (cx,cy,w,h) về điểm ảnh màn hình' }
+      { num: '01', title: 'Duyệt danh sách ứng viên', sub: 'Quét tuần tự qua 300 hàng ứng viên trong Tensor đầu ra' },
+      { num: '02', title: 'Lọc ngưỡng tin cậy', sub: 'Loại bỏ các dự đoán yếu với ngưỡng thích ứng (≥ 0.35)' },
+      { num: '03', title: 'Ánh xạ ngược tọa độ', sub: 'Chuyển đổi tọa độ letterbox về không gian điểm ảnh camera gốc' }
     ],
 
     mechanismEn: [
-      { step: 'Step 1 (Candidate Scan)', text: 'Iterates through 8,400 candidate columns to identify highest class confidence score (Argmax).' },
-      { step: 'Step 2 (Threshold Filter)', text: 'Immediately discards background predictions below confidence threshold (Score < 0.40).' },
-      { step: 'Step 3 (Inverse Letterbox)', text: 'Converts center (cx,cy,w,h) to corners (x1,y1,x2,y2) and inverts gray padding and scale multiplier.' }
+      { step: 'Step 1 (Matrix Traversal)', text: 'Extracts [x1, y1, x2, y2, score, class_id] vectors from the 300 candidate predictions.' },
+      { step: 'Step 2 (Adaptive Confidence Gate)', text: 'Enforces strict confidence threshold (Score ≥ 0.35 for target flowers, ≥ 0.60 for other flowers).' },
+      { step: 'Step 3 (Letterbox Inversion Formula)', text: 'Applies origX = (lx - padX) / scale and origY = (ly - padY) / scale to align boxes pixel-perfectly with real flowers.' }
     ],
     mechanismVi: [
-      { step: 'Bước 1 (Quét ma trận)', text: 'Duyệt nhanh qua 8.400 cột ứng viên để tìm điểm số tin cậy cực đại (Argmax) cho từng loài hoa.' },
-      { step: 'Bước 2 (Lọc ngưỡng tin cậy)', text: 'Loại bỏ ngay lập tức các dự đoán dưới ngưỡng (Confidence < 0.40).' },
-      { step: 'Bước 3 (Khử viền Letterbox)', text: 'Chuyển đổi tâm (cx, cy, w, h) sang (x1, y1, x2, y2) và ánh xạ ngược loại trừ khoảng đệm xám.' }
+      { step: 'Bước 1 (Trích xuất ma trận)', text: 'Đọc các vector [x1, y1, x2, y2, score, class_id] từ 300 hàng ứng viên đầu ra.' },
+      { step: 'Bước 2 (Lọc ngưỡng tự tin thích ứng)', text: 'Áp dụng ngưỡng lọc sạch (Score ≥ 0.35 cho 5 loài hoa chính, ≥ 0.60 cho hoa khác).' },
+      { step: 'Bước 3 (Công thức khử đệm Letterbox)', text: 'Áp dụng công thức origX = (lx - padX) / scale giúp khung viền ôm khít hoàn hảo từng cánh hoa.' }
     ],
 
     perfEn: [
-      { label: 'Decode Execution Time', value: '< 1.0 ms' },
-      { label: 'Confidence Threshold', value: 'Score ≥ 0.40' },
-      { label: 'Candidate Reduction', value: '8,400 → ~30-80 candidates' },
-      { label: 'Coordinate Precision', value: 'Pixel-perfect alignment' }
+      { label: 'Decode Execution Time', value: '< 0.5 ms' },
+      { label: 'Target Confidence Threshold', value: 'Score ≥ 0.35' },
+      { label: 'Candidate Reduction', value: '300 → ~5-15 active boxes' },
+      { label: 'Coordinate Precision', value: 'Sub-pixel accuracy' }
     ],
     perfVi: [
-      { label: 'Thời gian giải mã', value: '< 1.0 ms' },
-      { label: 'Ngưỡng tin cậy lọc', value: 'Score ≥ 0.40' },
-      { label: 'Tỉ lệ loại bỏ nhiễu', value: '8.400 → ~30-80 hộp ứng viên' },
-      { label: 'Độ chính xác tọa độ', value: 'Khớp từng điểm ảnh (Pixel-perfect)' }
+      { label: 'Thời gian giải mã', value: '< 0.5 ms' },
+      { label: 'Ngưỡng tin cậy chuẩn', value: 'Score ≥ 0.35' },
+      { label: 'Tỉ lệ lọc nhiễu', value: '300 → ~5-15 hộp hợp lệ' },
+      { label: 'Độ chính xác tọa độ', value: 'Khớp chuẩn xác từng điểm ảnh' }
     ],
 
     dataFlowEn: {
-      input: 'Raw prediction tensor ort.Tensor("float32", [1, 84, 8400])',
-      output: 'Array of candidate bounding boxes [{x, y, w, h, classId, score}]',
-      transform: 'Decodes normalized center coordinates and strips letterbox padding'
+      input: 'Raw prediction tensor ort.Tensor("float32", [1, 300, 6])',
+      output: 'Array of candidate bounding boxes [{x1, y1, x2, y2, classId, score}]',
+      transform: 'Decodes normalized box coordinates and strips letterbox padding'
     },
     dataFlowVi: {
-      input: 'Tensor dự đoán thô ort.Tensor("float32", [1, 84, 8400])',
-      output: 'Danh sách các hộp ứng viên [{x, y, w, h, classId, score}]',
-      transform: 'Giải mã tọa độ chuẩn hóa và loại bỏ 98% nhiễu nền'
+      input: 'Tensor dự đoán thô ort.Tensor("float32", [1, 300, 6])',
+      output: 'Danh sách các hộp ứng viên [{x1, y1, x2, y2, classId, score}]',
+      transform: 'Giải mã tọa độ chuẩn hóa và loại bỏ hoàn toàn khoảng đệm letterbox'
     }
   },
 
   nms: {
     layerEn: '04 · POST-PROCESS LAYER',
     layerVi: '04 · TẦNG HẬU XỬ LÝ',
-    nameEn: 'NMS (Non-Maximum Suppression) Filter',
-    nameVi: 'Bộ Lọc Triệt Tiêu Cực Đại NMS',
-    techTag: 'IoU ≤ 0.45 • Greedy Suppression • Class-aware Deduplication',
+    nameEn: 'Standard Class-Wise NMS Filter',
+    nameVi: 'Bộ Lọc Non-Maximum Suppression (NMS) Chuẩn',
+    techTag: 'IoU ≤ 0.45 • Standard Greedy Suppression • Multi-Flower Separation',
 
     flowStepsEn: [
-      { num: '01', title: 'Class Grouping', sub: 'Clusters candidate boxes by detected flower species' },
-      { num: '02', title: 'Score Ranking', sub: 'Sorts candidate boxes in descending order of confidence' },
-      { num: '03', title: 'IoU Deduplication', sub: 'Calculates Intersection-over-Union & suppresses IoU > 0.45' }
+      { num: '01', title: 'Class Partitioning', sub: 'Groups candidate boxes by detected flower species' },
+      { num: '02', title: 'Confidence Sorting', sub: 'Sorts candidates in descending order of confidence score' },
+      { num: '03', title: 'IoU Suppression', sub: 'Calculates Intersection-over-Union & suppresses duplicates (IoU > 0.45)' }
     ],
     flowStepsVi: [
       { num: '01', title: 'Phân loại theo loài', sub: 'Gom nhóm các hộp dự đoán theo từng loài hoa riêng biệt' },
       { num: '02', title: 'Sắp xếp độ tin cậy', sub: 'Sắp xếp các hộp ứng viên theo điểm tin cậy giảm dần' },
       { num: '03', title: 'Triệt tiêu IoU', sub: 'Tính diện tích giao thoa và loại bỏ hộp trùng lặp (IoU > 0.45)' }
     ],
-
     mechanismEn: [
-      { step: 'Step 1 (Species Partitioning)', text: 'Separates candidates by flower class so different species near each other do not suppress each other.' },
-      { step: 'Step 2 (Greedy Benchmark)', text: 'Picks the highest scoring detection as the gold reference box.' },
-      { step: 'Step 3 (IoU Math)', text: 'Computes Area(A ∩ B) / Area(A ∪ B) and suppresses all overlapping candidates with IoU > 0.45.' }
+      { step: 'Step 1 (Class Isolation)', text: 'Separates candidates by flower species so that different flowers near each other are never suppressed.' },
+      { step: 'Step 2 (Greedy Best-Box Selection)', text: 'Picks the highest scoring detection as the primary ground truth anchor.' },
+      { step: 'Step 3 (IoU Elimination)', text: 'Computes Area(A ∩ B) / Area(A ∪ B) and suppresses all overlapping redundant boxes with IoU > 0.45.' }
     ],
     mechanismVi: [
-      { step: 'Bước 1 (Phân loại theo loài)', text: 'Tách riêng các hộp theo từng loài hoa để tránh triệt tiêu nhầm hai loài hoa khác nhau mọc gần nhau.' },
-      { step: 'Bước 2 (Xếp hạng độ tin cậy)', text: 'Lấy hộp có điểm tin cậy cao nhất làm mốc chuẩn đầu tiên.' },
-      { step: 'Bước 3 (Tính chỉ số IoU)', text: 'Tính tỉ lệ giao thoa IoU = Diện tích giao / Diện tích hợp, loại bỏ các hộp có IoU > 0.45.' }
+      { step: 'Bước 1 (Cách ly theo loài hoa)', text: 'Tách riêng các hộp theo từng loài hoa để đảm bảo nhiều bông hoa khác loài gần nhau đều được giữ nguyên vẹn.' },
+      { step: 'Bước 2 (Chọn hộp tối ưu nhất)', text: 'Lấy hộp có điểm tin cậy cao nhất làm mốc chuẩn chính xác nhất.' },
+      { step: 'Bước 3 (Tính chỉ số IoU & Triệt tiêu)', text: 'Tính tỉ lệ giao thoa IoU = Diện tích giao / Diện tích hợp, loại bỏ triệt để các khung thừa chồng chéo có IoU > 0.45.' }
     ],
 
     perfEn: [
-      { label: 'Filter Execution Time', value: '< 0.5 ms' },
-      { label: 'IoU Overlap Threshold', value: '0.45 (Optimal balance)' },
-      { label: 'Max Detected Flowers', value: '20 flowers / frame' },
-      { label: 'Time Complexity', value: 'O(N log N) with early exit' }
+      { label: 'Filter Execution Time', value: '< 0.3 ms' },
+      { label: 'IoU Overlap Threshold', value: '0.45 (Standard YOLO spec)' },
+      { label: 'Multi-Flower Support', value: 'Simultaneous detection of unlimited distinct blooms' },
+      { label: 'Time Complexity', value: 'O(N log N)' }
     ],
     perfVi: [
-      { label: 'Thời gian xử lý', value: '< 0.5 ms' },
-      { label: 'Ngưỡng IoU', value: '0.45 (Chuẩn cân bằng)' },
-      { label: 'Giới hạn tối đa', value: '20 bông hoa / khung hình' },
-      { label: 'Độ phức tạp', value: 'O(N log N) có điều kiện dừng' }
+      { label: 'Thời gian xử lý', value: '< 0.3 ms' },
+      { label: 'Ngưỡng IoU tiêu chuẩn', value: '0.45 (Chuẩn công nghiệp YOLO)' },
+      { label: 'Hỗ trợ đa hoa', value: 'Nhận diện đồng thời nhiều bông hoa không giới hạn' },
+      { label: 'Độ phức tạp', value: 'O(N log N)' }
     ],
 
     dataFlowEn: {
-      input: 'Unfiltered candidate boxes (~30-80 boxes)',
+      input: 'Unfiltered candidate boxes (~5-15 boxes)',
       output: 'Clean final detection boxes (1-10 optimal flower boxes)',
       transform: 'Suppresses redundant overlapping bounding boxes per flower'
     },
     dataFlowVi: {
-      input: 'Danh sách hộp ứng viên chưa lọc (~30-80 hộp)',
+      input: 'Danh sách hộp ứng viên chưa lọc (~5-15 hộp)',
       output: 'Danh sách phát hiện chuẩn xác cuối cùng (1-10 hộp hoa tối ưu)',
-      transform: 'Triệt tiêu các khung trùng lặp, giữ lại duy nhất 1 khung bao chuẩn nhất'
+      transform: 'Triệt tiêu các khung trùng lặp, giữ lại duy nhất 1 khung bao chuẩn nhất cho mỗi bông hoa'
     }
   },
 
